@@ -1,3 +1,12 @@
+# Build folder
+build/
+
+# HDL output files
+ice40.json
+
+# Video files
+*.yuv
+
 # Prerequisites
 *.d
 
