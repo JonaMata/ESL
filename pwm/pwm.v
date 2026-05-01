@@ -9,8 +9,7 @@ module pwm #(
     input wire direction,
     output wire pwm_out,
     output wire ina,
-    output wire inb,
-
+    output wire inb
 );
     localparam PERIOD = 50000 / SPEED; // Clock cycles per PWM period
     localparam COUNTER_PERIOD = PERIOD/(2**DATA_WIDTH-1); // Clock cycles per counter increment

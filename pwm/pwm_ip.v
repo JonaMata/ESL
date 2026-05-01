@@ -1,5 +1,5 @@
 `timescale 1ps / 1ps
-module encoder_ip #(
+module pwm_ip #(
     parameter DATA_WIDTH = 32,
     parameter PWM_WIDTH = 8,
     parameter PWM_KHZ = 20
