@@ -12,7 +12,7 @@ module pwm #(
     output wire inb
 );
     localparam PERIOD = 50000 / SPEED; // Clock cycles per PWM period
-    localparam COUNTER_PERIOD = PERIOD/(2**DATA_WIDTH-1); // Clock cycles per counter increment
+    localparam COUNTER_PERIOD = PERIOD/(2**DATA_WIDTH-2); // Clock cycles per counter increment
 
     reg [$clog2(COUNTER_PERIOD)-1:0] clock_counter;
     reg [DATA_WIDTH-1:0] counter;
@@ -51,7 +51,7 @@ module pwm #(
             clock_counter <= clock_counter + 1;
             if (clock_counter >= (COUNTER_PERIOD - 1)) begin
                 clock_counter <= 0;
-                if (counter >= (2**DATA_WIDTH - 1)) begin
+                if (counter >= (2**DATA_WIDTH - 2)) begin
                     counter <= 0;
                 end else begin
                     counter <= counter + 1;
