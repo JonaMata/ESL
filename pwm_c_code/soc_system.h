@@ -15,28 +15,28 @@
  */
 
 /*
- * Macros for device 'encoder_ip_0', class 'encoder_ip'
+ * Macros for device 'pwm_ip_0', class 'pwm_ip'
  * Path to the device is from the master group 'hps_0'.
- * The macros are prefixed with 'HPS_0_ENCODER_IP_0_'.
+ * The macros are prefixed with 'HPS_0_PWM_IP_0_'.
  * The prefix is the master group descriptor and the slave descriptor.
  */
-#define HPS_0_ENCODER_IP_0_COMPONENT_TYPE encoder_ip
-#define HPS_0_ENCODER_IP_0_COMPONENT_NAME encoder_ip_0
-#define HPS_0_ENCODER_IP_0_BASE 0x0
-#define HPS_0_ENCODER_IP_0_SPAN 1024
-#define HPS_0_ENCODER_IP_0_END 0x3ff
+#define HPS_0_PWM_IP_0_COMPONENT_TYPE pwm_ip
+#define HPS_0_PWM_IP_0_COMPONENT_NAME pwm_ip_0
+#define HPS_0_PWM_IP_0_BASE 0x0
+#define HPS_0_PWM_IP_0_SPAN 1024
+#define HPS_0_PWM_IP_0_END 0x3ff
 
 /*
- * Macros for device 'encoder_ip_0', class 'encoder_ip'
+ * Macros for device 'pwm_ip_0', class 'pwm_ip'
  * Path to the device is from the master group 'hps_0_bridges'.
- * The macros are prefixed with 'HPS_0_BRIDGES_ENCODER_IP_0_'.
+ * The macros are prefixed with 'HPS_0_BRIDGES_PWM_IP_0_'.
  * The prefix is the master group descriptor and the slave descriptor.
  */
-#define HPS_0_BRIDGES_ENCODER_IP_0_COMPONENT_TYPE encoder_ip
-#define HPS_0_BRIDGES_ENCODER_IP_0_COMPONENT_NAME encoder_ip_0
-#define HPS_0_BRIDGES_ENCODER_IP_0_BASE 0x0
-#define HPS_0_BRIDGES_ENCODER_IP_0_SPAN 1024
-#define HPS_0_BRIDGES_ENCODER_IP_0_END 0x3ff
+#define HPS_0_BRIDGES_PWM_IP_0_COMPONENT_TYPE pwm_ip
+#define HPS_0_BRIDGES_PWM_IP_0_COMPONENT_NAME pwm_ip_0
+#define HPS_0_BRIDGES_PWM_IP_0_BASE 0x0
+#define HPS_0_BRIDGES_PWM_IP_0_SPAN 1024
+#define HPS_0_BRIDGES_PWM_IP_0_END 0x3ff
 
 /*
  * Macros for device 'hps_0_axi_sdram', class 'axi_sdram'
@@ -57,16 +57,16 @@
 #define HPS_0_ARM_A9_0_HPS_0_AXI_SDRAM_MEMORY_INFO_MEM_INIT_DATA_WIDTH 31
 
 /*
- * Macros for device 'encoder_ip_0', class 'encoder_ip'
+ * Macros for device 'pwm_ip_0', class 'pwm_ip'
  * Path to the device is from the master group 'hps_0_arm_a9_0'.
- * The macros are prefixed with 'HPS_0_ARM_A9_0_ENCODER_IP_0_'.
+ * The macros are prefixed with 'HPS_0_ARM_A9_0_PWM_IP_0_'.
  * The prefix is the master group descriptor and the slave descriptor.
  */
-#define HPS_0_ARM_A9_0_ENCODER_IP_0_COMPONENT_TYPE encoder_ip
-#define HPS_0_ARM_A9_0_ENCODER_IP_0_COMPONENT_NAME encoder_ip_0
-#define HPS_0_ARM_A9_0_ENCODER_IP_0_BASE 0xff200000
-#define HPS_0_ARM_A9_0_ENCODER_IP_0_SPAN 1024
-#define HPS_0_ARM_A9_0_ENCODER_IP_0_END 0xff2003ff
+#define HPS_0_ARM_A9_0_PWM_IP_0_COMPONENT_TYPE pwm_ip
+#define HPS_0_ARM_A9_0_PWM_IP_0_COMPONENT_NAME pwm_ip_0
+#define HPS_0_ARM_A9_0_PWM_IP_0_BASE 0xff200000
+#define HPS_0_ARM_A9_0_PWM_IP_0_SPAN 1024
+#define HPS_0_ARM_A9_0_PWM_IP_0_END 0xff2003ff
 
 /*
  * Macros for device 'hps_0_gmac0', class 'stmmac'
@@ -607,16 +607,16 @@
 #define HPS_0_ARM_A9_1_HPS_0_AXI_SDRAM_MEMORY_INFO_MEM_INIT_DATA_WIDTH 31
 
 /*
- * Macros for device 'encoder_ip_0', class 'encoder_ip'
+ * Macros for device 'pwm_ip_0', class 'pwm_ip'
  * Path to the device is from the master group 'hps_0_arm_a9_1'.
- * The macros are prefixed with 'HPS_0_ARM_A9_1_ENCODER_IP_0_'.
+ * The macros are prefixed with 'HPS_0_ARM_A9_1_PWM_IP_0_'.
  * The prefix is the master group descriptor and the slave descriptor.
  */
-#define HPS_0_ARM_A9_1_ENCODER_IP_0_COMPONENT_TYPE encoder_ip
-#define HPS_0_ARM_A9_1_ENCODER_IP_0_COMPONENT_NAME encoder_ip_0
-#define HPS_0_ARM_A9_1_ENCODER_IP_0_BASE 0xff200000
-#define HPS_0_ARM_A9_1_ENCODER_IP_0_SPAN 1024
-#define HPS_0_ARM_A9_1_ENCODER_IP_0_END 0xff2003ff
+#define HPS_0_ARM_A9_1_PWM_IP_0_COMPONENT_TYPE pwm_ip
+#define HPS_0_ARM_A9_1_PWM_IP_0_COMPONENT_NAME pwm_ip_0
+#define HPS_0_ARM_A9_1_PWM_IP_0_BASE 0xff200000
+#define HPS_0_ARM_A9_1_PWM_IP_0_SPAN 1024
+#define HPS_0_ARM_A9_1_PWM_IP_0_END 0xff2003ff
 
 /*
  * Macros for device 'hps_0_gmac0', class 'stmmac'
