@@ -14,6 +14,7 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 #define LOOPS 10000
 #define SPEED 1000
