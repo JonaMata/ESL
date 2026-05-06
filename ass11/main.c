@@ -127,55 +127,27 @@ int spiXfer(int fd, unsigned speed, char *txBuf, char *rxBuf, unsigned count) {
 char RXBuf[MAX_SPI_BUFSIZ];
 char TXBuf[MAX_SPI_BUFSIZ];
 
-int bytes = BYTES;
-int speed = SPEED;
-int loops = LOOPS;
-
 int main(int argc, char *argv[]) {
   int i, fd;
-  double start, diff, sps;
 
-  if (argc > 1)
-    bytes = atoi(argv[1]);
-  else
-    printf("./spi-driver-speed [bytes [bps [loops] ] ]\n\n");
+  fd = spiOpen(1, SPEED, 0);
 
-  if ((bytes < 1) || (bytes > MAX_SPI_BUFSIZ))
-    bytes = BYTES;
-
-  if (argc > 2)
-    speed = atoi(argv[2]);
-  if ((speed < 32000) || (speed > 250000000))
-    speed = SPEED;
-
-  if (argc > 3)
-    loops = atoi(argv[3]);
-  if ((loops < 1) || (loops > 10000000))
-    loops = LOOPS;
-
-  fd = spiOpen(1, speed, 0);
-
-  start = time_time();
 
   if (fd < 0) {
     printf("Failed to open SPI device: %d\n", fd);
     return 1;
   }
 
-  for (i = 0; i < loops; i++) {
-    // if (i % 2) {
-    //   TXBuf[0] = 255;
-    // } else {
-    //   TXBuf[0] = 0;
-    // }
-    TXBuf[0] = i & 0xFF;
-    spiXfer(fd, speed, TXBuf, RXBuf, bytes);
+
+
+  for (i = 0; i < LOOPS; i++) {
+    TXBuf[0] = i & 0x3;
+    spiXfer(fd, SPEED, TXBuf, RXBuf, 1);
+    bool btn1 = RXBuf[0] & 0x1;
+    bool btn2 = (RXBuf[0] >> 1) & 0x1;
+    printf("btn1: %s, btn2: %s\n", btn1 ? "on" : "off", btn2 ? "on" : "off");
+    sleep(1);
   }
 
-  diff = time_time() - start;
-
   close(fd);
-
-  printf("sps=%.1f: %d bytes @ %d bps (loops=%d time=%.1f)\n",
-         (double)loops / diff, bytes, speed, loops, diff);
 }
