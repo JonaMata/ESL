@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
 
 
   for (i = 0; i < LOOPS; i++) {
-    TXBuf[0] = i & 0x3;
+    TXBuf[0] = i & 0x7;
     spiXfer(fd, SPEED, TXBuf, RXBuf, 1);
     bool btn1 = RXBuf[0] & 0x1;
     bool btn2 = (RXBuf[0] >> 1) & 0x1;
