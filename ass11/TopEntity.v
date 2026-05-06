@@ -12,21 +12,28 @@ module TopEntity (
     input  SPI_CLK,
     input  SPI_PICO,
     input  SPI_CS,
+    input  btn1,
+    input  btn2,
     output SPI_POCI,
-    output led2
+    output led1,
+    output led2,
+    output led3
 );
 
+  //Syncing the SCK to the FPGA clock using a 3-bit shift register
   reg [2:0] SPI_CLKr;
   always @(posedge clk) SPI_CLKr <= {SPI_CLKr[1:0], SPI_CLK};
   wire SPI_CLK_risingedge = (SPI_CLKr[2:1] == 2'b01);
   wire SPI_CLK_fallingedge = (SPI_CLKr[2:1] == 2'b10);
 
+  //Syncing the CS to the FPGA clock using a 3-bit shift register
   reg [2:0] SPI_CSr;
   always @(posedge clk) SPI_CSr <= {SPI_CSr[1:0], SPI_CS};
   wire SPI_CS_active = ~SPI_CSr[1];
   wire SPI_CS_startmessage = (SPI_CSr[2:1] == 2'b10);
   wire SPI_CS_endmessage = (SPI_CSr[2:1] == 2'b01);
 
+  //Syncing the PICO to the FPGA clock using a 2-bit shift register
   reg [1:0] SPI_PICOr;
   always @(posedge clk) SPI_PICOr <= {SPI_PICOr[0], SPI_PICO};
   wire SPI_PICO_data = SPI_PICOr[1];
@@ -45,16 +52,24 @@ module TopEntity (
 
   always @(posedge clk) byte_received <= SPI_CS_active && SPI_CLK_risingedge && (bitcnt == 3'b111);
 
+  reg led1;
   reg led2;
-  always @(posedge clk) if (byte_received) led2 <= byte_data_received[0];
+  reg led3;
+
+  always @(posedge clk) if (byte_received) begin
+    led1 <= byte_data_received[0];
+    led2 <= byte_data_received[1];
+    led3 <= byte_data_received[2];
+  end
 
   reg [7:0] byte_data_sent;
   reg [7:0] cnt;
   always @(posedge clk) if (SPI_CS_startmessage) cnt <= cnt + 8'h1;
 
+
   always @(posedge clk)
     if (SPI_CS_active) begin
-      if (SPI_CS_startmessage) byte_data_sent <= cnt;
+      if (SPI_CS_startmessage) byte_data_sent <= {6'b0, btn2, btn1};
       else if (SPI_CLK_fallingedge) begin
         if (bitcnt == 3'b000) byte_data_sent <= 8'h00;
         else byte_data_sent <= {byte_data_sent[6:0], 1'b0};
