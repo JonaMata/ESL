@@ -19,6 +19,13 @@ module jiwy #(
 );
 
     reg [31:0] in_mem;
+    wire [9:0] in_yaw_mem;
+    wire [9:0] in_pitch_mem;
+    wire [1:0] in_enc_mem;
+
+    assign in_yaw_mem = in_mem[9:0];
+    assign in_pitch_mem = in_mem[19:10];
+    assign in_enc_mem = in_mem[21:20];
 
     wire yaw_count_reset;
     wire pitch_count_reset;
@@ -31,18 +38,16 @@ module jiwy #(
     wire pitch_enable;
     wire pitch_direction;
 
-    assign yaw_count_reset = in_mem[30];
-    assign pitch_count_reset = in_mem[31];
+    assign yaw_count_reset = in_enc_mem[0];
+    assign pitch_count_reset = in_enc_mem[1];
 
-    assign yaw_duty_cycle = in_mem[PWM_WIDTH-1:0];
-    assign yaw_enable = in_mem[PWM_WIDTH];
-    assign yaw_direction = in_mem[PWM_WIDTH+1];
+    assign yaw_duty_cycle = in_yaw_mem[PWM_WIDTH-1:0];
+    assign yaw_enable = in_yaw_mem[PWM_WIDTH];
+    assign yaw_direction = in_yaw_mem[PWM_WIDTH+1];
 
-    wire [15:0] in_mem_up;
-    assign in_mem_up = in_mem[31:16];
-    assign pitch_duty_cycle = in_mem_up[PWM_WIDTH-1:0];
-    assign pitch_enable = in_mem_up[PWM_WIDTH];
-    assign pitch_direction = in_mem_up[PWM_WIDTH+1];
+    assign pitch_duty_cycle = in_pitch_mem[PWM_WIDTH-1:0];
+    assign pitch_enable = in_pitch_mem[PWM_WIDTH];
+    assign pitch_direction = in_pitch_mem[PWM_WIDTH+1];
 
     wire [15:0] yaw_enc_count;
     wire [15:0] pitch_enc_count;
