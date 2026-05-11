@@ -104,7 +104,7 @@ module jiwy #(
             slave_readdata <= 0;
         end else begin
             if (slave_read) begin
-                slave_readdata <= {yaw_enc_count, pitch_enc_count};
+                slave_readdata <= {pitch_enc_count, yaw_enc_count};
             end
             if (slave_write) begin
                 in_mem <= slave_writedata;
