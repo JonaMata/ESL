@@ -38,9 +38,11 @@ module jiwy #(
     assign yaw_enable = in_mem[PWM_WIDTH];
     assign yaw_direction = in_mem[PWM_WIDTH+1];
 
-    assign pitch_duty_cycle = in_mem[2*PWM_WIDTH-1:PWM_WIDTH];
-    assign pitch_enable = in_mem[2*PWM_WIDTH];
-    assign pitch_direction = in_mem[2*PWM_WIDTH+1];
+    wire [15:0] in_mem_up;
+    assign in_mem_up = in_mem[31:16];
+    assign pitch_duty_cycle = in_mem_up[PWM_WIDTH-1:0];
+    assign pitch_enable = in_mem_up[PWM_WIDTH];
+    assign pitch_direction = in_mem_up[PWM_WIDTH+1];
 
     wire [15:0] yaw_enc_count;
     wire [15:0] pitch_enc_count;
