@@ -15,7 +15,7 @@ module jiwy #(
     output wire [2:0] motor_yaw,
     output wire [2:0] motor_pitch,
     input wire [1:0] enc_yaw,
-    input wire [1:0] enc_pitch,
+    input wire [1:0] enc_pitch
 );
 
     reg [31:0] in_mem;
@@ -81,7 +81,7 @@ module jiwy #(
         .rst(reset),
         .a(enc_yaw[0]),
         .b(enc_yaw[1]),
-        .count(yaw_enc_count)
+        .count(yaw_enc_count),
         .count_reset(yaw_count_reset)
     );
 
@@ -93,7 +93,7 @@ module jiwy #(
         .rst(reset),
         .a(enc_pitch[0]),
         .b(enc_pitch[1]),
-        .count(pitch_enc_count)
+        .count(pitch_enc_count),
         .count_reset(pitch_count_reset)
     );
 
