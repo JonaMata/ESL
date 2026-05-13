@@ -17,10 +17,35 @@
 XXDouble u [2 + 1];
 XXDouble y [2 + 1];
 
+uint8_t* jiwy_map = NULL;
+
+void set_pwm(uint8_t yaw_duty_cycle, bool yaw_direction, bool yaw_enable, uint8_t pitch_duty_cycle, bool pitch_direction, bool pitch_enable, bool yaw_reset, bool pitch_reset) {
+    *((uint32_t *)jiwy_map) = yaw_duty_cycle | yaw_enable << 8 | yaw_direction << 9
+        | pitch_duty_cycle << 10 | pitch_enable << 18 | pitch_direction << 19
+        | yaw_reset << 20 | pitch_reset << 21;
+}
+
+void get_encoders(uint16_t* yaw_encoder, uint16_t* pitch_encoder) {
+    uint32_t encoder_values = *((uint32_t *)(jiwy_map + 4));
+    *yaw_encoder = encoder_values & 0xFFFF;
+    *pitch_encoder = (encoder_values >> 16) & 0xFFFF;
+}
+
+void home_yaw() {
+    uint16_t prev_enc = 0;
+    uint16_t enc = 0;
+    get_encoders(&enc, NULL);
+    do {
+        set_pwm(40, true, true, 0, false, false, false, false);
+        sleep(0.01);
+        prev_enc = enc;
+        get_encoders(&enc, NULL);
+    } while (prev_enc-enc != 0);
+    set_pwm(0, false, false, 0, false, false, true, false);
+    set_pwm(0, false, false, 0, false, false, false, false);
+}
 
 int main(int argc, char** argv) {
-    
-    uint8_t* jiwy_map = NULL;
     int fd = 0;
 
 
@@ -36,33 +61,6 @@ int main(int argc, char** argv) {
 		close(fd);
 		return -1;
 	}
-
-
-    void set_pwm(uint8_t yaw_duty_cycle, bool yaw_direction, bool yaw_enable, uint8_t pitch_duty_cycle, bool pitch_direction, bool pitch_enable, bool yaw_reset, bool pitch_reset) {
-        *((uint32_t *)jiwy_map) = yaw_duty_cycle | yaw_enable << 8 | yaw_direction << 9
-            | pitch_duty_cycle << 10 | pitch_enable << 18 | pitch_direction << 19
-            | yaw_reset << 20 | pitch_reset << 21;
-    }
-
-    void get_encoders(uint16_t* yaw_encoder, uint16_t* pitch_encoder) {
-        uint32_t encoder_values = *((uint32_t *)(jiwy_map + 4));
-        *yaw_encoder = encoder_values & 0xFFFF;
-        *pitch_encoder = (encoder_values >> 16) & 0xFFFF;
-    }
-
-    void home_yaw() {
-        uint16_t prev_enc = 0;
-        uint16_t enc = 0;
-        get_encoders(&enc, NULL);
-        do {
-            set_pwm(40, true, true, 0, false, false, false, false);
-            sleep(0.01);
-            prev_enc = enc;
-            get_encoders(&enc, NULL);
-        } while (prev_enc-enc != 0);
-        set_pwm(0, false, false, 0, false, false, true, false);
-        set_pwm(0, false, false, 0, false, false, false, false);
-    }
 
     timer_t timer_id;
     struct sigevent sev;
