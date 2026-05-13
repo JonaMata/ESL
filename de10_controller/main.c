@@ -39,7 +39,7 @@ void home_yaw() {
     sleep(1);
     do {
         printf("Homing... Current encoder: %d\n", enc);
-        sleep(0.1);
+        sleep(1);
         prev_enc = enc;
         get_encoders(&enc, &enc_no);
     } while (prev_enc-enc != 0);
