@@ -31,9 +31,9 @@ void get_encoders(uint16_t* yaw_encoder, uint16_t* pitch_encoder) {
 }
 
 void home_yaw() {
-    uint16_t prev_enc = 0;
-    uint16_t enc = 0;
-    get_encoders(&enc, NULL);
+    // uint16_t prev_enc = 0;
+    // uint16_t enc = 0;
+    // get_encoders(&enc, NULL);
     // do {
     //     set_pwm(40, true, true, 0, false, false, false, false);
     //     sleep(0.01);
