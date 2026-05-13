@@ -25,15 +25,15 @@ void set_pwm(uint8_t yaw_duty_cycle, bool yaw_direction, bool yaw_enable, uint8_
 }
 
 void get_encoders(uint16_t* yaw_encoder, uint16_t* pitch_encoder) {
-    uint32_t encoder_values = *((uint32_t *)(jiwy_map + 4));
+    uint32_t encoder_values = *((uint32_t *)(jiwy_map));
     *yaw_encoder = encoder_values & 0xFFFF;
     *pitch_encoder = (encoder_values >> 16) & 0xFFFF;
 }
 
 void home_yaw() {
-    // uint16_t prev_enc = 0;
-    // uint16_t enc = 0;
-    // get_encoders(&enc, NULL);
+    uint16_t prev_enc = 0;
+    uint16_t enc = 0;
+    get_encoders(&enc, NULL);
     // do {
     //     set_pwm(40, true, true, 0, false, false, false, false);
     //     sleep(0.01);
