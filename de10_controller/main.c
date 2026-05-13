@@ -113,7 +113,7 @@ int main(int argc, char** argv) {
         printf("Timer tick\n");
         get_encoders(&yaw_encoder, &pitch_encoder);
         XXDouble position = (XXDouble)yaw_encoder / 5000.0 * 2 * 3.1415926;
-
+        u[0] = (double)counter / 5000.0 * 2 * 3.1415926;
         u[1] = position;
         XXCalculateSubmodel (u, y, xx_time);
         uint8_t duty_cycle = (uint8_t)(abs(y[1] * 255));
