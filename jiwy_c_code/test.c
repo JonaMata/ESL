@@ -86,9 +86,12 @@ int main(int argc, char** argv) {
 	set_pwm(0,0,0,0,0,0,true,true);
 	set_pwm(yaw_duty_cycle, yaw_direction, yaw_enable, pitch_duty_cycle, pitch_direction, pitch_enable, false, false);
 
+	uint16_t yaw_enc = 0;
+	uint16_t pitch_enc = 0;
 
 	while(1) {
-		printf("Encoder value: %u\n", *((uint32_t *)jiwy_map));
+		get_encoders(&yaw_enc, &pitch_enc);
+		printf("Yaw Encoder: %u, Pitch Encoder: %u\n", yaw_enc, pitch_enc);
 		sleep(1);
 	}
 
