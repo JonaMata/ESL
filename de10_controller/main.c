@@ -69,7 +69,7 @@ void *thread_work(void* arg) {
     sigemptyset(&sigset);
     sigaddset(&sigset, SIGUSR1);
 
-    home_yaw();
+    // home_yaw();
 
 
     // /* Initialize the inputs and outputs with correct initial values */
