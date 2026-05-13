@@ -21,8 +21,8 @@ uint32_t generate_PWM_string(uint8_t yaw_duty_cycle, bool yaw_direction, bool ya
 }
 
 void print_encoders(char *RXBuf) {
-  yaw_enc = RXBuf[0] & 0x65535; // mask 16 bits
-  pitch_enc = (RXBuf[0] >> 16) & 0x65535; // move 16 bits and mask them.
+  int yaw_enc = RXBuf[0] & 0x65535; // mask 16 bits
+  int pitch_enc = (RXBuf[0] >> 16) & 0x65535; // move 16 bits and mask them.
 	printf("Yaw Encoder: %u, Pitch Encoder: %u\n", yaw_enc, pitch_enc);
 }
 
@@ -186,14 +186,14 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
-	set_pwm(0,0,0,0,0,0,true,true);
-	set_pwm(yaw_duty_cycle, yaw_direction, yaw_enable, pitch_duty_cycle, pitch_direction, pitch_enable, false, false);
+	// set_pwm(0,0,0,0,0,0,true,true);
+	// set_pwm(yaw_duty_cycle, yaw_direction, yaw_enable, pitch_duty_cycle, pitch_direction, pitch_enable, false, false);
 
 	uint16_t yaw_enc = 0;
 	uint16_t pitch_enc = 0;
 
 	while(1) {
-		TXBuf[0] = generate_PWM_string(yaw_duty_cycle, yaw_direction, yaw_enable, pitch_duty_cycle, pitch_direction, pitch_enable, yaw_reset, pitch_reset);
+		TXBuf[0] = generate_PWM_string(yaw_duty_cycle, yaw_direction, yaw_enable, pitch_duty_cycle, pitch_direction, pitch_enable, false, false);
 		spiXfer(fd, SPEED, TXBuf, RXBuf, 1);
 		print_encoders(RXBuf);
 		sleep(1);
