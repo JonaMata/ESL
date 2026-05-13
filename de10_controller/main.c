@@ -47,7 +47,7 @@ void home_yaw() {
 }
 
 
-void thread_work() {
+void thread_work(void* arg) {
     timer_t timer_id;
     struct sigevent sev;
     sev.sigev_notify = SIGEV_SIGNAL;
@@ -98,8 +98,6 @@ void thread_work() {
 
 
 	XXTerminateSubmodel (u, y, xx_time);
-
-    return NULL;
 }
 
 
