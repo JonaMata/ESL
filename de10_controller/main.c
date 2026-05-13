@@ -47,7 +47,7 @@ void home_yaw() {
 }
 
 
-void thread_work(void* arg) {
+void *thread_work(void* arg) {
     timer_t timer_id;
     struct sigevent sev;
     sev.sigev_notify = SIGEV_SIGNAL;
@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
     sigaddset(&sigset, SIGUSR1);
     pthread_sigmask(SIG_BLOCK, &sigset, NULL);
 
-    pthread_create(&tid, NULL, &thread_work, NULL);
+    pthread_create(&tid, NULL, thread_work, NULL);
 
     pthread_join(tid, NULL);
 
