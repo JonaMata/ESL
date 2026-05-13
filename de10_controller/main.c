@@ -35,11 +35,11 @@ void home_yaw() {
     uint16_t enc = 0;
     uint16_t enc_no = 0;
     get_encoders(&enc, &enc_no);
-    set_pwm(0, false, false, 0, false, false, false, false);
+    set_pwm(40, true, true, 0, false, false, false, false);
+    sleep(.1);
     do {
         printf("Homing... Current encoder: %d\n", enc);
-        set_pwm(40, true, true, 0, false, false, false, false);
-        sleep(0.01);
+        sleep(0.1);
         prev_enc = enc;
         get_encoders(&enc, &enc_no);
     } while (prev_enc-enc != 0);
