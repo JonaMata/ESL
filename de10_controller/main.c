@@ -40,8 +40,8 @@ void home_yaw() {
         prev_enc = enc;
         get_encoders(&enc, NULL);
     } while (prev_enc-enc != 0);
-    set_pwm(0, false, false, 0, false, false, true, false);
-    set_pwm(0, false, false, 0, false, false, false, false);
+    // set_pwm(0, false, false, 0, false, false, true, false);
+    // set_pwm(0, false, false, 0, false, false, false, false);
 }
 
 int main(int argc, char** argv) {
