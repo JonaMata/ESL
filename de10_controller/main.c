@@ -48,56 +48,56 @@ void home_yaw() {
 
 
 void *thread_work(void* arg) {
-    // timer_t timer_id;
-    // struct sigevent sev;
-    // sev.sigev_notify = SIGEV_SIGNAL;
-    // sev.sigev_signo = SIGUSR1;
-    // sev.sigev_value.sival_ptr = &timer_id;
+    timer_t timer_id;
+    struct sigevent sev;
+    sev.sigev_notify = SIGEV_SIGNAL;
+    sev.sigev_signo = SIGUSR1;
+    sev.sigev_value.sival_ptr = &timer_id;
 
-    // struct itimerspec its;
-    // its.it_interval.tv_sec = 0;
-    // its.it_interval.tv_nsec = 1e6;
-    // its.it_value.tv_sec = 0;
-    // its.it_value.tv_nsec = 1e6;
+    struct itimerspec its;
+    its.it_interval.tv_sec = 0;
+    its.it_interval.tv_nsec = 1e6;
+    its.it_value.tv_sec = 0;
+    its.it_value.tv_nsec = 1e6;
 
-    // timer_create(CLOCK_MONOTONIC, &sev, &timer_id);
+    timer_create(CLOCK_MONOTONIC, &sev, &timer_id);
 
-    // timer_settime(timer_id, 0, &its, NULL);
+    timer_settime(timer_id, 0, &its, NULL);
 
-    // // create a sigset for sigwait to wait for SIGUSR1
-    // sigset_t sigset;
-    // sigemptyset(&sigset);
-    // sigaddset(&sigset, SIGUSR1);
+    // create a sigset for sigwait to wait for SIGUSR1
+    sigset_t sigset;
+    sigemptyset(&sigset);
+    sigaddset(&sigset, SIGUSR1);
 
-    // home_yaw();
-
-
-    // /* Initialize the inputs and outputs with correct initial values */
-    // u[0] = 0.0;		/* in */
-    // u[1] = 0.0;		/* position */
-
-    // y[0] = 0.0;		/* corr */
-    // y[1] = 0.0;		/* out */
-
-	// XXInitializeSubmodel (u, y, xx_time);
-
-    // uint16_t yaw_encoder;
-
-    // while (1) {
-    //     int sig;
-    //     sigwait(&sigset, &sig);
-    //     get_encoders(&yaw_encoder, NULL);
-    //     XXDouble position = (XXDouble)yaw_encoder / 5000.0 * 2 * 3.1415926;
-
-    //     u[1] = position;
-    //     XXCalculateSubmodel (u, y, xx_time);
-    //     uint8_t duty_cycle = (uint8_t)(abs(y[1] * 255));
-    //     bool direction = y[1] < 0;
-    //     set_pwm(duty_cycle, direction, true, 0, false, false, false, false);
-    // }
+    home_yaw();
 
 
-	// XXTerminateSubmodel (u, y, xx_time);
+    /* Initialize the inputs and outputs with correct initial values */
+    u[0] = 0.0;		/* in */
+    u[1] = 0.0;		/* position */
+
+    y[0] = 0.0;		/* corr */
+    y[1] = 0.0;		/* out */
+
+	XXInitializeSubmodel (u, y, xx_time);
+
+    uint16_t yaw_encoder;
+
+    while (1) {
+        int sig;
+        sigwait(&sigset, &sig);
+        // get_encoders(&yaw_encoder, NULL);
+        XXDouble position = (XXDouble)yaw_encoder / 5000.0 * 2 * 3.1415926;
+
+        u[1] = position;
+        XXCalculateSubmodel (u, y, xx_time);
+        uint8_t duty_cycle = (uint8_t)(abs(y[1] * 255));
+        bool direction = y[1] < 0;
+        // set_pwm(duty_cycle, direction, true, 0, false, false, false, false);
+    }
+
+
+	XXTerminateSubmodel (u, y, xx_time);
 }
 
 
