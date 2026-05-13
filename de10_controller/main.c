@@ -19,12 +19,6 @@ uint8_t* jiwy_map = NULL;
 XXDouble u [2 + 1];
 XXDouble y [2 + 1];
 
-/* Initialize the inputs and outputs with correct initial values */
-u[0] = 0.0;		/* in */
-u[1] = 0.0;		/* position */
-
-y[0] = 0.0;		/* corr */
-y[1] = 0.0;		/* out */
 
 void set_pwm(uint8_t yaw_duty_cycle, bool yaw_direction, bool yaw_enable, uint8_t pitch_duty_cycle, bool pitch_direction, bool pitch_enable, bool yaw_reset, bool pitch_reset) {
 	*((uint32_t *)jiwy_map) = yaw_duty_cycle | yaw_enable << 8 | yaw_direction << 9
@@ -76,6 +70,14 @@ void thread_work() {
     sigaddset(&sigset, SIGUSR1);
 
     home_yaw();
+
+
+    /* Initialize the inputs and outputs with correct initial values */
+    u[0] = 0.0;		/* in */
+    u[1] = 0.0;		/* position */
+
+    y[0] = 0.0;		/* corr */
+    y[1] = 0.0;		/* out */
 
 	XXInitializeSubmodel (u, y, xx_time);
 
