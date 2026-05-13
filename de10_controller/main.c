@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
     uint16_t pitch_encoder;
 
     printf("Starting control loop...\n");
-    int counter = 0;
+    int counter = 1200;
     bool count_dir = true;
     int setpoint = 500;
     while (1) {
@@ -121,19 +121,19 @@ int main(int argc, char** argv) {
         // if (duty_cycle > 128) duty_cycle = 128;
         bool direction = y[1] < 0;
         set_pwm(duty_cycle, direction, true, 0, false, false, false, false);
-        if (count_dir) {
-            counter++;
-            if (counter >= 2000) {
-                count_dir = false;
-                setpoint = 2000;
-            }
-        } else {
-            counter--;
-            if (counter <= 500) {
-                count_dir = true;
-                setpoint = 500;
-            }
-        }
+        // if (count_dir) {
+        //     counter++;
+        //     if (counter >= 2000) {
+        //         count_dir = false;
+        //         setpoint = 2000;
+        //     }
+        // } else {
+        //     counter--;
+        //     if (counter <= 500) {
+        //         count_dir = true;
+        //         setpoint = 500;
+        //     }
+        // }
     }
 
 
