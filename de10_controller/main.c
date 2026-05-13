@@ -36,7 +36,7 @@ void home_yaw() {
     uint16_t enc_no = 0;
     get_encoders(&enc, &enc_no);
     set_pwm(40, true, true, 0, false, false, false, false);
-    sleep(.1);
+    sleep(1);
     do {
         printf("Homing... Current encoder: %d\n", enc);
         sleep(0.1);
@@ -105,6 +105,8 @@ int main(int argc, char** argv) {
     uint16_t pitch_encoder;
 
     printf("Starting control loop...\n");
+    int counter = 0;
+    bool count_dir = true;
     while (1) {
         int sig;
         sigwait(&sigset, &sig);
@@ -117,6 +119,17 @@ int main(int argc, char** argv) {
         uint8_t duty_cycle = (uint8_t)(abs(y[1] * 255));
         bool direction = y[1] < 0;
         set_pwm(duty_cycle, direction, true, 0, false, false, false, false);
+        if (count_dir) {
+            counter++;
+            if (counter >= 2000) {
+                count_dir = false;
+            }
+        } else {
+            counter--;
+            if (counter <= 500) {
+                count_dir = true;
+            }
+        }
     }
 
 
