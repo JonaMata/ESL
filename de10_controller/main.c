@@ -19,6 +19,10 @@ XXDouble y [2 + 1];
 
 
 int main(int argc, char** argv) {
+    sigset_t sigset;
+    sigemptyset(&sigset);
+    sigaddset(&sigset, SIGUSR1);
+    sigprocmask(SIG_BLOCK, &sigset, NULL);
     
     uint8_t* jiwy_map = NULL;
     int fd = 0;
