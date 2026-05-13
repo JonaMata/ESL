@@ -37,6 +37,7 @@ void home_yaw() {
     get_encoders(&enc, &enc_no);
     set_pwm(0, false, false, 0, false, false, false, false);
     do {
+        printf("Homing... Current encoder: %d\n", enc);
         set_pwm(40, true, true, 0, false, false, false, false);
         sleep(0.01);
         prev_enc = enc;
@@ -86,8 +87,9 @@ int main(int argc, char** argv) {
 
     timer_settime(timer_id, 0, &its, NULL);
 
-
+    printf("Start homing...\n");
     home_yaw();
+    printf("Homing complete.\n");
 
 
     /* Initialize the inputs and outputs with correct initial values */
@@ -102,9 +104,11 @@ int main(int argc, char** argv) {
     uint16_t yaw_encoder;
     uint16_t pitch_encoder;
 
+    printf("Starting control loop...\n");
     while (1) {
         int sig;
         sigwait(&sigset, &sig);
+        printf("Timer tick\n");
         get_encoders(&yaw_encoder, &pitch_encoder);
         XXDouble position = (XXDouble)yaw_encoder / 5000.0 * 2 * 3.1415926;
 
