@@ -118,7 +118,7 @@ int main(int argc, char** argv) {
         u[1] = position;
         XXCalculateSubmodel (u, y, xx_time);
         uint8_t duty_cycle = (uint8_t)(abs(y[1] * 255));
-        if (duty_cycle > 128) duty_cycle = 128;
+        if (duty_cycle > 64) duty_cycle = 64;
         bool direction = y[1] < 0;
         set_pwm(duty_cycle, direction, true, 0, false, false, false, false);
         if (count_dir) {
