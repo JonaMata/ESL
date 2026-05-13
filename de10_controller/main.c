@@ -19,10 +19,6 @@ XXDouble y [2 + 1];
 
 
 int main(int argc, char** argv) {
-    sigset_t sigset;
-    sigemptyset(&sigset);
-    sigaddset(&sigset, SIGUSR1);
-    sigprocmask(SIG_BLOCK, &sigset, NULL);
     
     uint8_t* jiwy_map = NULL;
     int fd = 0;
@@ -73,6 +69,8 @@ int main(int argc, char** argv) {
     sev.sigev_notify = SIGEV_SIGNAL;
     sev.sigev_signo = SIGUSR1;
     sev.sigev_value.sival_ptr = &timer_id;
+
+    sigprocmask(SIG_BLOCK, &sigset, NULL);
 
     struct itimerspec its;
     its.it_interval.tv_sec = 0;
