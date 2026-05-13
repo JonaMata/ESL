@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
     timer_settime(timer_id, 0, &its, NULL);
 
 
-    // home_yaw();
+    home_yaw();
 
 
     /* Initialize the inputs and outputs with correct initial values */
@@ -105,14 +105,14 @@ int main(int argc, char** argv) {
     while (1) {
         int sig;
         sigwait(&sigset, &sig);
-        // get_encoders(&yaw_encoder, NULL);
+        get_encoders(&yaw_encoder, NULL);
         XXDouble position = (XXDouble)yaw_encoder / 5000.0 * 2 * 3.1415926;
 
         u[1] = position;
         XXCalculateSubmodel (u, y, xx_time);
         uint8_t duty_cycle = (uint8_t)(abs(y[1] * 255));
         bool direction = y[1] < 0;
-        // set_pwm(duty_cycle, direction, true, 0, false, false, false, false);
+        set_pwm(duty_cycle, direction, true, 0, false, false, false, false);
     }
 
 
