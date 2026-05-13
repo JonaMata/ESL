@@ -10,7 +10,6 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <stdbool.h>
-#include "soc_system.h"
 
 #define SPEED 1000
 uint8_t* jiwy_map = NULL;
