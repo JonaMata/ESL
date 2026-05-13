@@ -12,7 +12,7 @@
 
 #include "soc_system.h"
 
-#include "PositionControllerPan/xxsubmod.h"
+#include "xxsubmod.h"
 
 uint8_t* jiwy_map = NULL;
 
