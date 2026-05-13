@@ -18,8 +18,8 @@ XXDouble u [2 + 1];
 XXDouble y [2 + 1];
 
 
-void *thread_work(void* arg) {
-
+int main(int argc, char** argv) {
+    
     uint8_t* jiwy_map = NULL;
     int fd = 0;
 
@@ -117,20 +117,5 @@ void *thread_work(void* arg) {
 
 
 	close(fd);
-}
-
-
-int main(int argc, char** argv) {
-	pthread_t tid;
-
-    // create a signal mask so the SIGUSR1 is queued for the sigwait
-    sigset_t sigset;
-    sigemptyset(&sigset);
-    sigaddset(&sigset, SIGUSR1);
-    pthread_sigmask(SIG_BLOCK, &sigset, NULL);
-
-    pthread_create(&tid, NULL, thread_work, NULL);
-
-    pthread_join(tid, NULL);
 	return 0;
 }
