@@ -70,7 +70,6 @@ int main(int argc, char** argv) {
     sev.sigev_signo = SIGUSR1;
     sev.sigev_value.sival_ptr = &timer_id;
 
-    sigprocmask(SIG_BLOCK, &sigset, NULL);
 
     struct itimerspec its;
     its.it_interval.tv_sec = 0;
@@ -80,12 +79,14 @@ int main(int argc, char** argv) {
 
     timer_create(CLOCK_MONOTONIC, &sev, &timer_id);
 
-    timer_settime(timer_id, 0, &its, NULL);
-
     // create a sigset for sigwait to wait for SIGUSR1
     sigset_t sigset;
     sigemptyset(&sigset);
     sigaddset(&sigset, SIGUSR1);
+    sigprocmask(SIG_BLOCK, &sigset, NULL);
+
+    timer_settime(timer_id, 0, &its, NULL);
+
 
     // home_yaw();
 
