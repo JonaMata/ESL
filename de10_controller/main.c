@@ -72,32 +72,32 @@ void *thread_work(void* arg) {
     home_yaw();
 
 
-    /* Initialize the inputs and outputs with correct initial values */
-    u[0] = 0.0;		/* in */
-    u[1] = 0.0;		/* position */
+    // /* Initialize the inputs and outputs with correct initial values */
+    // u[0] = 0.0;		/* in */
+    // u[1] = 0.0;		/* position */
 
-    y[0] = 0.0;		/* corr */
-    y[1] = 0.0;		/* out */
+    // y[0] = 0.0;		/* corr */
+    // y[1] = 0.0;		/* out */
 
-	XXInitializeSubmodel (u, y, xx_time);
+	// XXInitializeSubmodel (u, y, xx_time);
 
-    uint16_t yaw_encoder;
+    // uint16_t yaw_encoder;
 
-    while (1) {
-        int sig;
-        sigwait(&sigset, &sig);
-        // get_encoders(&yaw_encoder, NULL);
-        XXDouble position = (XXDouble)yaw_encoder / 5000.0 * 2 * 3.1415926;
+    // while (1) {
+    //     int sig;
+    //     sigwait(&sigset, &sig);
+    //     get_encoders(&yaw_encoder, NULL);
+    //     XXDouble position = (XXDouble)yaw_encoder / 5000.0 * 2 * 3.1415926;
 
-        u[1] = position;
-        XXCalculateSubmodel (u, y, xx_time);
-        uint8_t duty_cycle = (uint8_t)(abs(y[1] * 255));
-        bool direction = y[1] < 0;
-        // set_pwm(duty_cycle, direction, true, 0, false, false, false, false);
-    }
+    //     u[1] = position;
+    //     XXCalculateSubmodel (u, y, xx_time);
+    //     uint8_t duty_cycle = (uint8_t)(abs(y[1] * 255));
+    //     bool direction = y[1] < 0;
+    //     set_pwm(duty_cycle, direction, true, 0, false, false, false, false);
+    // }
 
 
-	XXTerminateSubmodel (u, y, xx_time);
+	// XXTerminateSubmodel (u, y, xx_time);
 }
 
 
