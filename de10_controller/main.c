@@ -107,13 +107,14 @@ int main(int argc, char** argv) {
     printf("Starting control loop...\n");
     int counter = 0;
     bool count_dir = true;
+    int setpoint = 500;
     while (1) {
         int sig;
         sigwait(&sigset, &sig);
         printf("Timer tick\n");
         get_encoders(&yaw_encoder, &pitch_encoder);
         XXDouble position = (XXDouble)yaw_encoder / 5000.0 * 2 * 3.1415926;
-        u[0] = (double)counter / 5000.0 * 2 * 3.1415926;
+        u[0] = (double)setpoint / 5000.0 * 2 * 3.1415926;
         u[1] = position;
         XXCalculateSubmodel (u, y, xx_time);
         uint8_t duty_cycle = (uint8_t)(abs(y[1] * 255));
@@ -123,11 +124,13 @@ int main(int argc, char** argv) {
             counter++;
             if (counter >= 2000) {
                 count_dir = false;
+                setpoint = 2000;
             }
         } else {
             counter--;
             if (counter <= 500) {
                 count_dir = true;
+                setpoint = 500;
             }
         }
     }
