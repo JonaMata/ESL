@@ -84,7 +84,7 @@ module jiwy_icoboard #(
   
 
   always @(posedge clk) begin
-    if (~SPI_CS_active) //bitcnt <= 5'b00000;
+    if (~SPI_CS_active) bitcnt <= bitcnt;
     else if (SPI_CLK_risingedge) begin
       bitcnt <= bitcnt + 5'b00001;
       data_received <= {data_received[30:0], SPI_PICO_data};
@@ -108,7 +108,7 @@ module jiwy_icoboard #(
 
   always @(posedge clk) begin
     if (SPI_CS_active) begin
-      if (SPI_CS_startmessage) //data_sent <= {yaw_enc_count, pitch_enc_count};
+      if (SPI_CS_startmessage) data_sent <= data_sent;
       else if (SPI_CLK_fallingedge) begin
         if (bitcnt == 5'b00000) data_sent <= {yaw_enc_count, pitch_enc_count};
         end
