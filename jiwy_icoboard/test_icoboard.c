@@ -41,11 +41,11 @@ double time_time(void) {
 int spiOpen(unsigned spiChan, unsigned spiBaud, unsigned spiFlags) {
   int i, fd;
   char spiMode;
-  char spiBits = 8;
+  char spiBits = 32;
   char dev[32];
 
   spiMode = spiFlags & 3;
-  spiBits = 8;
+  spiBits = 32;
 
   sprintf(dev, "/dev/spidev0.%d", spiChan);
 
