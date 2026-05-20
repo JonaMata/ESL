@@ -6,16 +6,26 @@ module jiwy_icoboard #(
     parameter PWM_KHZ = 20
 )(
     input  clk,
-    input  reset,
+    input  btn1, //reset button
     input  SPI_CLK,
     input  SPI_PICO,
     input  SPI_CS,
     output SPI_POCI,
-    input [1:0] enc_yaw,
-    input [1:0] enc_pitch,
-    output [3:0] motor_pitch,
-    output [3:0] motor_yaw
+    input  YAW_ENC_A,
+    input  YAW_ENC_B,
+    input  PITCH_ENC_A,
+    input  PITCH_ENC_B,
+    output PITCH_DIRA,
+    output PITCH_DIRB,
+    output PITCH_PWM_VAL,
+    output YAW_DIRA,
+    output YAW_DIRB,
+    output YAW_PWM_VAL
 );
+  // Re-assigning everything.
+  wire reset;
+  assign reset = btn1;
+
   // Setting up SPI, syncing the different parts to the FPGA clock ---
   //Syncing the SCK to the FPGA clock using a 3-bit shift register
   reg [2:0] SPI_CLKr;
@@ -116,9 +126,9 @@ module jiwy_icoboard #(
       .duty_cycle(yaw_duty_cycle),
       .enable(yaw_enable),
       .direction(yaw_direction),
-      .pwm_out(motor_yaw[0]),
-      .ina(motor_yaw[1]),
-      .inb(motor_yaw[2])
+      .pwm_out(YAW_PWM_VAL),
+      .ina(YAW_DIRA),
+      .inb(YAW_DIRB)
   );
 
   pwm #(
@@ -130,9 +140,9 @@ module jiwy_icoboard #(
       .duty_cycle(pitch_duty_cycle),
       .enable(pitch_enable),
       .direction(pitch_direction),
-      .pwm_out(motor_pitch[0]),
-      .ina(motor_pitch[1]),
-      .inb(motor_pitch[2])
+      .pwm_out(PITCH_PWM_VAL),
+      .ina(PITCH_DIRA),
+      .inb(PITCH_DIRB)
   );
 
   encoder #(
@@ -140,8 +150,8 @@ module jiwy_icoboard #(
   ) yaw_encoder (
       .clk(clk),
       .rst(reset),
-      .a(enc_yaw[0]),
-      .b(enc_yaw[1]),
+      .a(YAW_ENC_A),
+      .b(YAW_ENC_B),
       .count(yaw_enc_count),
       .count_reset(yaw_count_reset)
   );
@@ -151,8 +161,8 @@ module jiwy_icoboard #(
   ) pitch_encoder (
       .clk(clk),
       .rst(reset),
-      .a(enc_pitch[0]),
-      .b(enc_pitch[1]),
+      .a(PITCH_ENC_A),
+      .b(PITCH_ENC_B),
       .count(pitch_enc_count),
       .count_reset(pitch_count_reset)
   );
