@@ -116,6 +116,7 @@ int main(int argc, char** argv) {
         printf("Timer tick\n");
         get_encoders(&yaw_encoder, &pitch_encoder);
         int diff = yaw_encoder - prev_yaw_encoder;
+        prev_yaw_encoder = yaw_encoder;
         if (abs(diff) > 32768) {
             if (diff > 0) {
                 diff -= 65536;
