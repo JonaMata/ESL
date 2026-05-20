@@ -103,6 +103,8 @@ int main(int argc, char** argv) {
 
     uint16_t yaw_encoder;
     uint16_t pitch_encoder;
+    uint16_t prev_yaw_encoder = 0;
+    int raw_position = 0;
 
     printf("Starting control loop...\n");
     int counter = 1200;
@@ -113,7 +115,16 @@ int main(int argc, char** argv) {
         sigwait(&sigset, &sig);
         printf("Timer tick\n");
         get_encoders(&yaw_encoder, &pitch_encoder);
-        XXDouble position = (XXDouble)yaw_encoder / 5000.0 * 2 * 3.1415926;
+        int diff = yaw_encoder - prev_yaw_encoder;
+        if (abs(diff) > 32768) {
+            if (diff > 0) {
+                diff -= 65536;
+            } else {
+                diff += 65536;
+            }
+        }
+        raw_position += diff;
+        XXDouble position = (XXDouble)raw_position / 5000.0 * 2 * 3.1415926;
         u[0] = (double)setpoint / 5000.0 * 2 * 3.1415926;
         u[1] = position;
         XXCalculateSubmodel (u, y, xx_time);
