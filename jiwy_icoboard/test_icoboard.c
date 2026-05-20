@@ -21,9 +21,9 @@ uint32_t generate_PWM_string(uint8_t yaw_duty_cycle, bool yaw_direction, bool ya
 }
 
 // Function to extract and print the yaw and pitch encoder values from the received buffer
-void print_encoders(char *RXBuf) {
-  int yaw_enc = RXBuf[0] & 0x65535; // mask 16 bits
-  int pitch_enc = (RXBuf[0] >> 16) & 0x65535; // move 16 bits and mask them.
+void print_encoders(uint32_t received_data) {
+  int yaw_enc = received_data & 0x65535; // mask 16 bits
+  int pitch_enc = (received_data >> 16) & 0x65535; // move 16 bits and mask them.
 	printf("Yaw Encoder: %u, Pitch Encoder: %u\n", yaw_enc, pitch_enc);
 }
 
@@ -41,11 +41,11 @@ double time_time(void) {
 int spiOpen(unsigned spiChan, unsigned spiBaud, unsigned spiFlags) {
   int i, fd;
   char spiMode;
-  char spiBits = 16;
+  char spiBits = 8;
   char dev[32];
 
   spiMode = spiFlags & 3;
-  spiBits = 16;
+  spiBits = 8;
 
   sprintf(dev, "/dev/spidev0.%d", spiChan);
 
@@ -193,12 +193,18 @@ int main(int argc, char** argv) {
 
 	uint16_t yaw_enc = 0;
 	uint16_t pitch_enc = 0;
+  uint32_t PWM_string;
+  uint32_t received_data;
 
 	while(1) {
-		TXBuf[0] = generate_PWM_string(yaw_duty_cycle, yaw_direction, yaw_enable, pitch_duty_cycle, pitch_direction, pitch_enable, false, false);
-		printf("Sent PWM control string: 0x%08X\n", TXBuf[0]);
-    spiXfer(fd, SPEED, TXBuf, RXBuf, 1);
-		print_encoders(RXBuf);
+		PWM_string = generate_PWM_string(yaw_duty_cycle, yaw_direction, yaw_enable, pitch_duty_cycle, pitch_direction, pitch_enable, false, false);
+		printf("Sent PWM control string: 0x%08X\n", PWM_string);
+    for(i = 0; i < 4; i++) {
+      TXBuf[0] = (PWM_string >> (i * 8)) & 0xFF; // Extract each byte from the 32-bit integer
+      spiXfer(fd, SPEED, TXBuf, RXBuf, 1); // Send one byte at a time
+      received_data |= (RXBuf[0] << (i * 8)); // Shift the received byte back to its original position and combine it into the final 32-bit integer
+    }
+		print_encoders(received_data);
 		sleep(1);
 	}
 
