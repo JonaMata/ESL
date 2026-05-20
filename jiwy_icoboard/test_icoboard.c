@@ -12,14 +12,15 @@
 #include <stdbool.h>
 
 #define SPEED 1000
-uint8_t* jiwy_map = NULL;
 
+// Function to generate the 32-bit PWM control string based on the input parameters
 uint32_t generate_PWM_string(uint8_t yaw_duty_cycle, bool yaw_direction, bool yaw_enable, uint8_t pitch_duty_cycle, bool pitch_direction, bool pitch_enable, bool yaw_reset, bool pitch_reset) {
 	return yaw_duty_cycle | yaw_enable << 8 | yaw_direction << 9
 		| pitch_duty_cycle << 10 | pitch_enable << 18 | pitch_direction << 19
 		| yaw_reset << 20 | pitch_reset << 21;
 }
 
+// Function to extract and print the yaw and pitch encoder values from the received buffer
 void print_encoders(char *RXBuf) {
   int yaw_enc = RXBuf[0] & 0x65535; // mask 16 bits
   int pitch_enc = (RXBuf[0] >> 16) & 0x65535; // move 16 bits and mask them.
@@ -141,6 +142,7 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
+  // Parse and validate command-line arguments
 	uint32_t yaw_duty_cycle = atoi(argv[1]);
 	uint8_t yaw_direction = atoi(argv[2]);
 	uint8_t yaw_enable = atoi(argv[3]);
@@ -194,7 +196,8 @@ int main(int argc, char** argv) {
 
 	while(1) {
 		TXBuf[0] = generate_PWM_string(yaw_duty_cycle, yaw_direction, yaw_enable, pitch_duty_cycle, pitch_direction, pitch_enable, false, false);
-		spiXfer(fd, SPEED, TXBuf, RXBuf, 1);
+		printf("Sent PWM control string: 0x%08X\n", TXBuf[0]);
+    spiXfer(fd, SPEED, TXBuf, RXBuf, 1);
 		print_encoders(RXBuf);
 		sleep(1);
 	}
