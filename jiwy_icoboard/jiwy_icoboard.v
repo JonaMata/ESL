@@ -45,11 +45,6 @@ module jiwy_icoboard #(
   always @(posedge clk) SPI_PICOr <= {SPI_PICOr[0], SPI_PICO};
   wire SPI_PICO_data = SPI_PICOr[1];
 
-  // Receiving data ------------------------------------------------
-  reg [4:0] bitcnt;
-  reg received_data_bool;
-  reg [31:0] data_received;
-  
   // Incoming variables
   reg [31:0] in_mem;
   wire [9:0] in_yaw_mem;
@@ -82,8 +77,14 @@ module jiwy_icoboard #(
   assign pitch_enable = in_pitch_mem[PWM_WIDTH];
   assign pitch_direction = in_pitch_mem[PWM_WIDTH+1];
 
+  // Receiving data ------------------------------------------------
+  reg [4:0] bitcnt = 5'b00000;
+  reg received_data_bool;
+  reg [31:0] data_received;
+  
+
   always @(posedge clk) begin
-    if (~SPI_CS_active) bitcnt <= 5'b00000;
+    // if (~SPI_CS_active) bitcnt <= 5'b00000;
     else if (SPI_CLK_risingedge) begin
       bitcnt <= bitcnt + 5'b00001;
       data_received <= {data_received[30:0], SPI_PICO_data};
@@ -107,9 +108,10 @@ module jiwy_icoboard #(
 
   always @(posedge clk) begin
     if (SPI_CS_active) begin
-      if (SPI_CS_startmessage) data_sent <= {yaw_enc_count, pitch_enc_count};
+      // if (SPI_CS_startmessage) data_sent <= {yaw_enc_count, pitch_enc_count};
       else if (SPI_CLK_fallingedge) begin
-        if (bitcnt == 5'b00000) data_sent <= 32'h00000000;
+        if (bitcnt == 5'b00000) data_sent <= {yaw_enc_count, pitch_enc_count};
+        end
         else data_sent <= {data_sent[30:0], 1'b0};
       end
     end
