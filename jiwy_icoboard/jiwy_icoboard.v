@@ -110,7 +110,7 @@ module jiwy_icoboard #(
     if (SPI_CS_active) begin
       if (SPI_CS_startmessage) data_sent <= data_sent;
       else if (SPI_CLK_fallingedge) begin
-        if (bitcnt == 5'b00000) data_sent <= {yaw_enc_count, pitch_enc_count};
+        if (bitcnt == 5'b00000) data_sent <= in_mem;//{yaw_enc_count, pitch_enc_count};
         else data_sent <= {data_sent[30:0], 1'b0};
       end
     end
