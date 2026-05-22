@@ -200,7 +200,7 @@ int main(int argc, char** argv) {
 		PWM_string = generate_PWM_string(yaw_duty_cycle, yaw_direction, yaw_enable, pitch_duty_cycle, pitch_direction, pitch_enable, false, false);
 		printf("Sent PWM control string: 0x%08X\n", PWM_string);
     for(i = 0; i < 4; i++) {
-      TXBuf[0] = (PWM_string >> (i * 8)) & 0xFF; // Extract each byte from the 32-bit integer
+      TXBuf[0] = (PWM_string >> ((3-i) * 8)) & 0xFF; // Extract each byte from the 32-bit integer
       spiXfer(fd, SPEED, TXBuf, RXBuf, 1); // Send one byte at a time
       received_data |= (RXBuf[0] << (i * 8)); // Shift the received byte back to its original position and combine it into the final 32-bit integer
     }
