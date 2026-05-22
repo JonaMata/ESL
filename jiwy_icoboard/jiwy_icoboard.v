@@ -89,7 +89,8 @@ module jiwy_icoboard #(
 
   always @(posedge clk) begin
     if (~SPI_CS_active) begin
-      bitcnt <= 5'b00000;
+      // bitcnt <= 5'b00000;
+      bitcnt <= bitcnt;
       // packet_count <= packet_count + 2'b01;
     end 
     else if (SPI_CLK_risingedge) begin
