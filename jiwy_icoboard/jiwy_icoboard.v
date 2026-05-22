@@ -130,7 +130,7 @@ module jiwy_icoboard #(
         led2_state <= ~led2_state; // Toggle LED to indicate start of message
       end
       else if (SPI_CLK_fallingedge) begin
-        if (bitcnt == 5'b00000) data_sent <= 32'h00000000;//{yaw_enc_count, pitch_enc_count};
+        if (bitcnt == 5'b00000) data_sent <= data_sent;//32'h00000000;//{yaw_enc_count, pitch_enc_count};
         else data_sent <= {data_sent[30:0], 1'b0};
       end
     end
