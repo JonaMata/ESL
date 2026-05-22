@@ -82,23 +82,24 @@ module jiwy_icoboard #(
   reg [1:0] packet_count = 2'b11;
 
   // Receiving data ------------------------------------------------
-  reg [2:0] bitcnt = 3'b000;
+  reg [4:0] bitcnt = 5'b00000;
   reg received_data_bool;
   reg [31:0] data_received;
   
 
   always @(posedge clk) begin
     if (~SPI_CS_active) begin
-      bitcnt <= 3'b000;
-      packet_count <= packet_count + 2'b01;
+      bitcnt <= 5'b00000;
+      // packet_count <= packet_count + 2'b01;
     end 
     else if (SPI_CLK_risingedge) begin
-      bitcnt <= bitcnt + 3'b001;
+      bitcnt <= bitcnt + 5'b00001;
       data_received <= {data_received[30:0], SPI_PICO_data};
     end
   end
 
-  always @(posedge clk) received_data_bool <= SPI_CS_active && SPI_CLK_risingedge && packet_count == 2'b11 && (bitcnt == 3'b111);
+  always @(posedge clk) received_data_bool <= SPI_CS_active && SPI_CLK_risingedge && (bitcnt == 5'b11111);
+  // always @(posedge clk) received_data_bool <= SPI_CS_active && SPI_CLK_risingedge && packet_count == 2'b11 && (bitcnt == 3'b111);
 
   reg led_received = 0;
   assign led1 = led_received;
@@ -123,9 +124,9 @@ module jiwy_icoboard #(
 
   always @(posedge clk) begin
     if (SPI_CS_active) begin
-      if (SPI_CS_startmessage) data_sent <= 32'h00000000;
+      if (SPI_CS_startmessage) data_sent <= data_sent;
       else if (SPI_CLK_fallingedge) begin
-        if (bitcnt == 3'b000) data_sent <= in_mem[(packet_count+1)*8-1 : packet_count*8];//{yaw_enc_count, pitch_enc_count};
+        if (bitcnt == 5'b00000) data_sent <= in_mem;//{yaw_enc_count, pitch_enc_count};
         else data_sent <= {data_sent[30:0], 1'b0};
       end
     end
