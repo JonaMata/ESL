@@ -105,14 +105,10 @@ module jiwy_icoboard #(
   reg led_received = 0;
   assign led1 = led_received;
 
-  reg led2_state = 0;
-  assign led2 = led2_state;
-
   always @(posedge clk) if (received_data_bool) begin
     // Process incoming 32 bits here
     in_mem <= data_received;
     led_received <= ~led_received; // Toggle LED to indicate data reception
-    if (data_received == 32'hFFFFFFFF) led2_state <= ~led2_state; // Toggle LED2 if data is all 1s
   end
 
  // Sending data ---------------------------------------------------
@@ -123,9 +119,16 @@ module jiwy_icoboard #(
 
   // always @(posedge clk) if (SPI_CS_startmessage) cnt <= cnt + 8'h1;
 
+
+  reg led2_state = 0;
+  assign led2 = led2_state;
+
   always @(posedge clk) begin
     if (SPI_CS_active) begin
-      if (SPI_CS_startmessage && bitcnt == 5'b00000) data_sent <= in_mem;
+      if (SPI_CS_startmessage && bitcnt == 5'b00000) begin
+        data_sent <= in_mem;
+        led2_state <= ~led2_state; // Toggle LED to indicate start of message
+      end
       else if (SPI_CLK_fallingedge) begin
         if (bitcnt == 5'b00000) data_sent <= 32'h00000000;//{yaw_enc_count, pitch_enc_count};
         else data_sent <= {data_sent[30:0], 1'b0};
