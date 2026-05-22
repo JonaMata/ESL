@@ -123,9 +123,9 @@ module jiwy_icoboard #(
 
   always @(posedge clk) begin
     if (SPI_CS_active) begin
-      if (SPI_CS_startmessage) data_sent <= in_mem[(packet_count+1)*8-1 : packet_count*8];
+      if (SPI_CS_startmessage) data_sent <= 32'h00000000;
       else if (SPI_CLK_fallingedge) begin
-        if (bitcnt == 3'b000) data_sent <= in_mem;//{yaw_enc_count, pitch_enc_count};
+        if (bitcnt == 3'b000) data_sent <= in_mem[(packet_count+1)*8-1 : packet_count*8];//{yaw_enc_count, pitch_enc_count};
         else data_sent <= {data_sent[30:0], 1'b0};
       end
     end
