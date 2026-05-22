@@ -7,6 +7,8 @@ module jiwy_icoboard #(
 )(
     input  clk,
     input  btn1, //reset button
+    output led1,
+    output led2,
     input  SPI_CLK,
     input  SPI_PICO,
     input  SPI_CS,
@@ -93,9 +95,17 @@ module jiwy_icoboard #(
 
   always @(posedge clk) received_data_bool <= SPI_CS_active && SPI_CLK_risingedge && (bitcnt == 5'b11111);
 
+  reg led_received = 0;
+  assign led1 = led_received;
+
+  reg led2_state = 0;
+  assign led2 = led2_state;
+
   always @(posedge clk) if (received_data_bool) begin
     // Process incoming 32 bits here
     in_mem <= data_received;
+    led_received <= ~led_received; // Toggle LED to indicate data reception
+    if (data_received == 32'hFFFFFFFF) led2_state <= ~led2_state; // Toggle LED2 if data is all 1s
   end
 
  // Sending data ---------------------------------------------------
