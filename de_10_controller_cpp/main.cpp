@@ -184,6 +184,7 @@ int main(int argc, char** argv) {
 
         yawController.Calculate(u_yaw, y_yaw);
         pitchController.Calculate(u_pitch, y_pitch);
+        
         uint8_t yaw_duty_cycle = (uint8_t)(abs(y_yaw[1] * 255));
         uint8_t pitch_duty_cycle = (uint8_t)(abs(y_pitch[1] * 255));
         if (yaw_duty_cycle > 64) yaw_duty_cycle = 64;
