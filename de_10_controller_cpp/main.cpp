@@ -188,14 +188,14 @@ int main(int argc, char** argv) {
         uint8_t yaw_duty_cycle = (uint8_t)(abs(y_yaw[1] * 255));
         uint8_t pitch_duty_cycle = (uint8_t)(abs(y_pitch[1] * 255));
 
-        printf("controller out: %f\t pwm: %u\n", y_yaw[1], yaw_duty_cycle);
-
         if (yaw_duty_cycle > 64) yaw_duty_cycle = 64;
         if (pitch_duty_cycle > 64) pitch_duty_cycle = 64;
 
         bool yaw_direction = y_yaw[1] < 0;
         bool pitch_direction = y_pitch[1] < 0;
         set_pwm(yaw_duty_cycle, yaw_direction, true, pitch_duty_cycle, pitch_direction, true, false, false);
+
+        printf("controller out: %f\t pwm: %u\n", y_yaw[1], yaw_duty_cycle);
     }
 
 
