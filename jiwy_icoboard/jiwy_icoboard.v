@@ -82,35 +82,33 @@ module jiwy_icoboard #(
   reg [1:0] packet_count = 2'b11;
 
   // Receiving data ------------------------------------------------
-  reg [2:0] bitcnt = 3'b000;
+  reg [4:0] bitcnt = 5'b00000;
   reg received_data_bool;
   reg [31:0] data_received;
   
 
   always @(posedge clk) begin
     if (~SPI_CS_active) begin
-      bitcnt <= 3'b000;
-      packet_count <= packet_count + 2'b01;
+      // bitcnt <= 5'b00000;
+      bitcnt <= bitcnt;
+      // packet_count <= packet_count + 2'b01;
     end 
     else if (SPI_CLK_risingedge) begin
-      bitcnt <= bitcnt + 3'b001;
+      bitcnt <= bitcnt + 5'b00001;
       data_received <= {data_received[30:0], SPI_PICO_data};
     end
   end
 
-  always @(posedge clk) received_data_bool <= SPI_CS_active && SPI_CLK_risingedge && packet_count == 2'b11 && (bitcnt == 3'b111);
+  always @(posedge clk) received_data_bool <= SPI_CS_active && SPI_CLK_risingedge && (bitcnt == 5'b11111);
+  // always @(posedge clk) received_data_bool <= SPI_CS_active && SPI_CLK_risingedge && packet_count == 2'b11 && (bitcnt == 3'b111);
 
   reg led_received = 0;
   assign led1 = led_received;
-
-  reg led2_state = 0;
-  assign led2 = led2_state;
 
   always @(posedge clk) if (received_data_bool) begin
     // Process incoming 32 bits here
     in_mem <= data_received;
     led_received <= ~led_received; // Toggle LED to indicate data reception
-    if (data_received == 32'hFFFFFFFF) led2_state <= ~led2_state; // Toggle LED2 if data is all 1s
   end
 
  // Sending data ---------------------------------------------------
@@ -121,11 +119,18 @@ module jiwy_icoboard #(
 
   // always @(posedge clk) if (SPI_CS_startmessage) cnt <= cnt + 8'h1;
 
+
+  reg led2_state = 0;
+  assign led2 = led2_state;
+
   always @(posedge clk) begin
     if (SPI_CS_active) begin
-      if (SPI_CS_startmessage) data_sent <= 32'h00000000;
+      if (SPI_CS_startmessage && bitcnt == 5'b00000) begin
+        data_sent <= in_mem;
+        led2_state <= ~led2_state; // Toggle LED to indicate start of message
+      end
       else if (SPI_CLK_fallingedge) begin
-        if (bitcnt == 3'b000) data_sent <= in_mem[(packet_count+1)*8-1 : packet_count*8];//{yaw_enc_count, pitch_enc_count};
+        if (bitcnt == 5'b00000) data_sent <= 32'h00000000;//{yaw_enc_count, pitch_enc_count};
         else data_sent <= {data_sent[30:0], 1'b0};
       end
     end
