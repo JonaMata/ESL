@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <signal.h>
 #include <time.h>
+#include <math.h>
 
 #include "soc_system.h"
 
