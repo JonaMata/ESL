@@ -205,8 +205,8 @@ int main(int argc, char** argv) {
 
 
 	
-	yawController.Terminate (u, y);
-    pitchController.Terminate (u, y);
+	yawController.Terminate (u_yaw, y_yaw);
+    pitchController.Terminate (u_pitch, y_pitch);
 
 
 	close(fd);
