@@ -40,7 +40,7 @@ void home_yaw() {
     uint16_t enc = 0;
     uint16_t enc_no = 0;
     get_encoders(&enc, &enc_no);
-    set_pwm(40, true, true, 0, false, false, false, false);
+    set_pwm(20, true, true, 0, false, false, false, false);
     sleep(1);
     do {
         printf("Homing yaw... Current encoder: %d\n", enc);
@@ -57,7 +57,7 @@ void home_pitch() {
     uint16_t enc = 0;
     uint16_t enc_no = 0;
     get_encoders(&enc_no, &enc);
-    set_pwm(0, false, false, 40, true, true, false, false);
+    set_pwm(0, false, false, 20, true, true, false, false);
     sleep(1);
     do {
         printf("Homing pitch... Current encoder: %d\n", enc);
@@ -192,19 +192,6 @@ int main(int argc, char** argv) {
         bool yaw_direction = y_yaw[1] < 0;
         bool pitch_direction = y_pitch[1] < 0;
         set_pwm(yaw_duty_cycle, yaw_direction, true, pitch_duty_cycle, pitch_direction, true, false, false);
-        // if (count_dir) {
-        //     counter++;
-        //     if (counter >= 2000) {
-        //         count_dir = false;
-        //         setpoint = 2000;
-        //     }
-        // } else {
-        //     counter--;
-        //     if (counter <= 500) {
-        //         count_dir = true;
-        //         setpoint = 500;
-        //     }
-        // }
     }
 
 
