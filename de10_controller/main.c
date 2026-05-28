@@ -109,7 +109,7 @@ int main(int argc, char** argv) {
     printf("Starting control loop...\n");
     int counter = 1200;
     bool count_dir = true;
-    int setpoint = 500;
+    int setpoint = 5000;
     while (1) {
         int sig;
         sigwait(&sigset, &sig);
@@ -125,8 +125,8 @@ int main(int argc, char** argv) {
             }
         }
         raw_position += diff;
-        XXDouble position = (XXDouble)raw_position / 5000.0 * 2 * 3.1415926;
-        u[0] = (double)setpoint / 5000.0 * 2 * 3.1415926;
+        XXDouble position = (XXDouble)raw_position / 21708.8 * 2 * 3.1415926;
+        u[0] = (double)setpoint / 21708.8 * 2 * 3.1415926;
         u[1] = position;
         XXCalculateSubmodel (u, y, xx_time);
         uint8_t duty_cycle = (uint8_t)(abs(y[1] * 255));
