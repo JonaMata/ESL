@@ -197,7 +197,7 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+			Filter="cpp;c;cyy;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
 				RelativePath="..\..\EulerAngles.c"
@@ -208,37 +208,37 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxfuncs.c"
+				RelativePath="..\..\yyfuncs.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxinteg.c"
+				RelativePath="..\..\yyinteg.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxinverse.c"
+				RelativePath="..\..\yyinverse.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxmain.c"
+				RelativePath="..\..\yymain.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxmatrix.c"
+				RelativePath="..\..\yymatrix.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxmodel.c"
+				RelativePath="..\..\yymodel.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxsubmod.c"
+				RelativePath="..\..\yysubmod.c"
 				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl"
+			Filter="h;hpp;hyy;hm;inl"
 			>
 			<File
 				RelativePath="..\..\EulerAngles.h"
@@ -249,27 +249,27 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxfuncs.h"
+				RelativePath="..\..\yyfuncs.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxinteg.h"
+				RelativePath="..\..\yyinteg.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxmatrix.h"
+				RelativePath="..\..\yymatrix.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxmodel.h"
+				RelativePath="..\..\yymodel.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxsubmod.h"
+				RelativePath="..\..\yysubmod.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxtypes.h"
+				RelativePath="..\..\yytypes.h"
 				>
 			</File>
 		</Filter>

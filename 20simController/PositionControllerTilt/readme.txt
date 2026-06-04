@@ -24,29 +24,29 @@ Target files
 readme.txt
 	this file
 
-xxmain.c
+yymain.c
 	an example main loop that calls the submodel function
 
-xxsubmod.h
-xxsubmod.c
+yysubmod.h
+yysubmod.c
 	the function that calls the model and the integration process
 
-xxmodel.h
-xxmodel.c
+yymodel.h
+yymodel.c
 	the actual model code (the equations of the selected 20-sim model)
 
-xxinteg.h
-xxinteg.c
+yyinteg.h
+yyinteg.c
 	the explicit integration routines 
 
-xxtypes.h
-xxfuncs.h
-xxfuncs.c
+yytypes.h
+yyfuncs.h
+yyfuncs.c
 	some types and functions that are not part of standard ANSI-C libraries
 
-xxmatrix.h
-xxmatrix.c
-xxinverse.c
+yymatrix.h
+yymatrix.c
+yyinverse.c
 	complete ANSI-C matrix library for vectors or matrices that are used in the model
 
 project/

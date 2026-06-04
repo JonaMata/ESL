@@ -8,16 +8,16 @@
 	<token name="ALGLOOP_NAMES3"><![CDATA[]]></token>
 	<token name="ALGLOOP_UNITS"><![CDATA[]]></token>
 	<token name="ALIAS_EQUATIONS"><![CDATA[	/* PlusMinus1\plus1 = corrGain\output; */
-	xx_V[12] = xx_V[1];
+	yy_V[12] = yy_V[1];
 
 	/* PlusMinus2\output = PID1\error; */
-	xx_V[14] = xx_R[1];
+	yy_V[14] = yy_R[1];
 
 	/* PlusMinus1\plus2 = PID1\output; */
-	xx_V[13] = xx_V[2];
+	yy_V[13] = yy_V[2];
 
 	/* SignalLimiter2\input = PlusMinus1\output; */
-	xx_V[15] = xx_V[4];
+	yy_V[15] = yy_V[4];
 ]]></token>
 	<token name="ALIAS_MATRIX_NAMES"><![CDATA[	NULL
 ]]></token>
@@ -63,47 +63,47 @@ SignalLimiter2\input
 	<token name="DEPSTATE_NAMES3"><![CDATA[]]></token>
 	<token name="DEPSTATE_UNITS"><![CDATA[]]></token>
 	<token name="DYNAMIC_EQUATIONS"><![CDATA[	/* PID1\factor = 1 / (sampletime + PID1\tauD * PID1\beta); */
-	xx_V[3] = 1.0 / (xx_step_size + xx_P[2] * xx_P[3]);
+	yy_V[3] = 1.0 / (yy_step_size + yy_P[2] * yy_P[3]);
 
 	/* corrGain\input = corr; */
-	xx_V[0] = xx_V[8];
+	yy_V[0] = yy_V[8];
 
 	/* PlusMinus2\plus1 = in; */
-	xx_V[5] = xx_V[9];
+	yy_V[5] = yy_V[9];
 
 	/* PlusMinus2\minus1 = position; */
-	xx_V[6] = xx_V[10];
+	yy_V[6] = yy_V[10];
 
 	/* corrGain\output = corrGain\K * corrGain\input; */
-	xx_V[1] = xx_P[0] * xx_V[0];
+	yy_V[1] = yy_P[0] * yy_V[0];
 
 	/* PID1\error = PlusMinus2\plus1 - PlusMinus2\minus1; */
-	xx_R[1] = xx_V[5] - xx_V[6];
+	yy_R[1] = yy_V[5] - yy_V[6];
 
 	/* PID1\uD = PID1\factor * (((PID1\tauD * PID1\uD_previous) * PID1\beta + (PID1\tauD * PID1\kp) * (PID1\error - PID1\error_previous)) + (sampletime * PID1\kp) * PID1\error); */
-	xx_R[0] = xx_V[3] * (((xx_P[2] * xx_s[0]) * xx_P[3] + (xx_P[2] * xx_P[1]) * (xx_R[1] - xx_s[1])) + (xx_step_size * xx_P[1]) * xx_R[1]);
+	yy_R[0] = yy_V[3] * (((yy_P[2] * yy_s[0]) * yy_P[3] + (yy_P[2] * yy_P[1]) * (yy_R[1] - yy_s[1])) + (yy_step_size * yy_P[1]) * yy_R[1]);
 
 	/* PID1\uI = PID1\uI_previous + (sampletime * PID1\uD) / PID1\tauI; */
-	xx_R[2] = xx_s[2] + (xx_step_size * xx_R[0]) / xx_P[4];
+	yy_R[2] = yy_s[2] + (yy_step_size * yy_R[0]) / yy_P[4];
 
 	/* PID1\output = PID1\uI + PID1\uD; */
-	xx_V[2] = xx_R[2] + xx_R[0];
+	yy_V[2] = yy_R[2] + yy_R[0];
 
 	/* PlusMinus1\output = corrGain\output + PID1\output; */
-	xx_V[4] = xx_V[1] + xx_V[2];
+	yy_V[4] = yy_V[1] + yy_V[2];
 
 	/* SignalLimiter2\output = if PlusMinus1\output < SignalLimiter2\minimum... ; */
-	xx_V[7] = ((xx_V[4] < xx_P[5]) ? 
+	yy_V[7] = ((yy_V[4] < yy_P[5]) ? 
 		/* SignalLimiter2\minimum */
-		xx_P[5]
+		yy_P[5]
 	:
 		/* if PlusMinus1\output > SignalLimiter2\maximum...  */
-		((xx_V[4] > xx_P[6]) ? 
+		((yy_V[4] > yy_P[6]) ? 
 			/* SignalLimiter2\maximum */
-			xx_P[6]
+			yy_P[6]
 		:
 			/* PlusMinus1\output */
-			xx_V[4]
+			yy_V[4]
 		)
 	);
 ]]></token>
@@ -160,9 +160,9 @@ PID1\uI_previous_initial
 	<token name="INITIALIZE_CONSTANTS"><![CDATA[]]></token>
 	<token name="INITIALIZE_FAVORITE_PARS"><![CDATA[]]></token>
 	<token name="INITIALIZE_FAVORITE_VARS"><![CDATA[]]></token>
-	<token name="INITIALIZE_INITIAL_VALUES"><![CDATA[	xx_I[0] = 0.0;		/* PID1\uD_previous_initial */
-	xx_I[1] = 0.0;		/* PID1\error_previous_initial */
-	xx_I[2] = 0.0;		/* PID1\uI_previous_initial */
+	<token name="INITIALIZE_INITIAL_VALUES"><![CDATA[	yy_I[0] = 0.0;		/* PID1\uD_previous_initial */
+	yy_I[1] = 0.0;		/* PID1\error_previous_initial */
+	yy_I[2] = 0.0;		/* PID1\uI_previous_initial */
 ]]></token>
 	<token name="INITIALIZE_INPUTS"><![CDATA[	u[0] = 0.0;		/* corr */
 	u[1] = 0.0;		/* in */
@@ -171,13 +171,13 @@ PID1\uI_previous_initial
 	<token name="INITIALIZE_MATRICES"><![CDATA[]]></token>
 	<token name="INITIALIZE_OUTPUTS"><![CDATA[	y[0] = 0.0;		/* out */
 ]]></token>
-	<token name="INITIALIZE_PARAMETERS"><![CDATA[	xx_P[0] = 0.0;		/* corrGain\K */
-	xx_P[1] = 1.6;		/* PID1\kp */
-	xx_P[2] = 0.05;		/* PID1\tauD */
-	xx_P[3] = 0.001;		/* PID1\beta */
-	xx_P[4] = 10.5;		/* PID1\tauI */
-	xx_P[5] = -0.99;		/* SignalLimiter2\minimum */
-	xx_P[6] = 0.99;		/* SignalLimiter2\maximum */
+	<token name="INITIALIZE_PARAMETERS"><![CDATA[	yy_P[0] = 0.0;		/* corrGain\K */
+	yy_P[1] = 1.6;		/* PID1\kp */
+	yy_P[2] = 0.05;		/* PID1\tauD */
+	yy_P[3] = 0.001;		/* PID1\beta */
+	yy_P[4] = 10.5;		/* PID1\tauI */
+	yy_P[5] = -0.99;		/* SignalLimiter2\minimum */
+	yy_P[6] = 0.99;		/* SignalLimiter2\maximum */
 ]]></token>
 	<token name="INITIALIZE_PARAMETERS2"><![CDATA[		0.0 /* corrGain\K */, 
 		1.6 /* PID1\kp */, 
@@ -186,9 +186,9 @@ PID1\uI_previous_initial
 		10.5 /* PID1\tauI */, 
 		-0.99 /* SignalLimiter2\minimum */, 
 		0.99 /* SignalLimiter2\maximum */]]></token>
-	<token name="INITIALIZE_STATES"><![CDATA[	xx_s[0] = xx_I[0];		/* PID1\uD_previous */
-	xx_s[1] = xx_I[1];		/* PID1\error_previous */
-	xx_s[2] = xx_I[2];		/* PID1\uI_previous */
+	<token name="INITIALIZE_STATES"><![CDATA[	yy_s[0] = yy_I[0];		/* PID1\uD_previous */
+	yy_s[1] = yy_I[1];		/* PID1\error_previous */
+	yy_s[2] = yy_I[2];		/* PID1\uI_previous */
 ]]></token>
 	<token name="INPUT_EQUATIONS"><![CDATA[]]></token>
 	<token name="INPUT_NAMES"><![CDATA[	"corr",
@@ -203,9 +203,9 @@ PID1\uI_previous_initial
 in
 position
 ]]></token>
-	<token name="INPUT_TO_VARIABLE_EQUATIONS"><![CDATA[	xx_V[8] = u[0];		/* corr */
-	xx_V[9] = u[1];		/* in */
-	xx_V[10] = u[2];		/* position */
+	<token name="INPUT_TO_VARIABLE_EQUATIONS"><![CDATA[	yy_V[8] = u[0];		/* corr */
+	yy_V[9] = u[1];		/* in */
+	yy_V[10] = u[2];		/* position */
 ]]></token>
 	<token name="INPUT_UNITS"><![CDATA[
 
@@ -432,7 +432,7 @@ position
 	<token name="NUMBEROF_WHILESTATEMENT"><![CDATA[0]]></token>
 	<token name="NUMBEROF_XOR"><![CDATA[0]]></token>
 	<token name="OUTPUT_EQUATIONS"><![CDATA[	/* out = SignalLimiter2\output; */
-	xx_V[11] = xx_V[7];
+	yy_V[11] = yy_V[7];
 ]]></token>
 	<token name="OUTPUT_NAMES"><![CDATA[	"out"
 ]]></token>
@@ -557,7 +557,7 @@ in
 position
 out
 ]]></token>
-	<token name="VARIABLE_TO_OUTPUT_EQUATIONS"><![CDATA[	y[0] = 	xx_V[11];		/* out */
+	<token name="VARIABLE_TO_OUTPUT_EQUATIONS"><![CDATA[	y[0] = 	yy_V[11];		/* out */
 ]]></token>
 	<token name="VARIABLE_UNITS"><![CDATA[
 
@@ -573,27 +573,27 @@ out
 
 ]]></token>
 	<token name="WORK_ARRAY_SIZE"><![CDATA[0]]></token>
-	<token name="XX_ALG_IN_ARRAY_NAME"><![CDATA[A]]></token>
-	<token name="XX_ALG_OUT_ARRAY_NAME"><![CDATA[a]]></token>
-	<token name="XX_CONSTANT_ARRAY_NAME"><![CDATA[C]]></token>
-	<token name="XX_DEP_RATE_ARRAY_NAME"><![CDATA[r]]></token>
-	<token name="XX_DEP_STATE_ARRAY_NAME"><![CDATA[S]]></token>
-	<token name="XX_EXT_IN_ARRAY_NAME"><![CDATA[e]]></token>
-	<token name="XX_EXT_OUT_ARRAY_NAME"><![CDATA[E]]></token>
-	<token name="XX_FAVORITE_PARS_ARRAY_NAME"><![CDATA[F]]></token>
-	<token name="XX_FAVORITE_VARS_ARRAY_NAME"><![CDATA[f]]></token>
-	<token name="XX_INITIAL_VALUE_ARRAY_NAME"><![CDATA[I]]></token>
-	<token name="XX_MATRIX_ARRAY_NAME"><![CDATA[M]]></token>
-	<token name="XX_PARAMETER_ARRAY_NAME"><![CDATA[P]]></token>
-	<token name="XX_RATE_ARRAY_NAME"><![CDATA[R]]></token>
-	<token name="XX_STATE_ARRAY_NAME"><![CDATA[s]]></token>
-	<token name="XX_UNNAMED_ARRAY_NAME"><![CDATA[U]]></token>
-	<token name="XX_VARIABLE_ARRAY_NAME"><![CDATA[V]]></token>
+	<token name="YY_ALG_IN_ARRAY_NAME"><![CDATA[A]]></token>
+	<token name="YY_ALG_OUT_ARRAY_NAME"><![CDATA[a]]></token>
+	<token name="YY_CONSTANT_ARRAY_NAME"><![CDATA[C]]></token>
+	<token name="YY_DEP_RATE_ARRAY_NAME"><![CDATA[r]]></token>
+	<token name="YY_DEP_STATE_ARRAY_NAME"><![CDATA[S]]></token>
+	<token name="YY_EXT_IN_ARRAY_NAME"><![CDATA[e]]></token>
+	<token name="YY_EXT_OUT_ARRAY_NAME"><![CDATA[E]]></token>
+	<token name="YY_FAVORITE_PARS_ARRAY_NAME"><![CDATA[F]]></token>
+	<token name="YY_FAVORITE_VARS_ARRAY_NAME"><![CDATA[f]]></token>
+	<token name="YY_INITIAL_VALUE_ARRAY_NAME"><![CDATA[I]]></token>
+	<token name="YY_MATRIX_ARRAY_NAME"><![CDATA[M]]></token>
+	<token name="YY_PARAMETER_ARRAY_NAME"><![CDATA[P]]></token>
+	<token name="YY_RATE_ARRAY_NAME"><![CDATA[R]]></token>
+	<token name="YY_STATE_ARRAY_NAME"><![CDATA[s]]></token>
+	<token name="YY_UNNAMED_ARRAY_NAME"><![CDATA[U]]></token>
+	<token name="YY_VARIABLE_ARRAY_NAME"><![CDATA[V]]></token>
 	<token name="INTEGRATION_METHOD_NAME"><![CDATA[Discrete]]></token>
-	<token name="VARPREFIX"><![CDATA[xx_]]></token>
-	<token name="FUNCTIONPREFIX"><![CDATA[XX]]></token>
-	<token name="XX_TIME"><![CDATA[time]]></token>
-	<token name="XX_INITIALIZE"><![CDATA[initialize]]></token>
+	<token name="VARPREFIX"><![CDATA[yy_]]></token>
+	<token name="FUNCTIONPREFIX"><![CDATA[YY]]></token>
+	<token name="YY_TIME"><![CDATA[time]]></token>
+	<token name="YY_INITIALIZE"><![CDATA[initialize]]></token>
 	<token name="EVENT_DELTA"><![CDATA[1e-06]]></token>
 	<token name="FORMAJORVERSION"><![CDATA[4]]></token>
 	<token name="FORMINORVERSION"><![CDATA[5]]></token>
@@ -941,27 +941,27 @@ VARIABLE_NAMES3
 VARIABLE_TO_OUTPUT_EQUATIONS
 VARIABLE_UNITS
 WORK_ARRAY_SIZE
-XX_ALG_IN_ARRAY_NAME
-XX_ALG_OUT_ARRAY_NAME
-XX_CONSTANT_ARRAY_NAME
-XX_DEP_RATE_ARRAY_NAME
-XX_DEP_STATE_ARRAY_NAME
-XX_EXT_IN_ARRAY_NAME
-XX_EXT_OUT_ARRAY_NAME
-XX_FAVORITE_PARS_ARRAY_NAME
-XX_FAVORITE_VARS_ARRAY_NAME
-XX_INITIAL_VALUE_ARRAY_NAME
-XX_MATRIX_ARRAY_NAME
-XX_PARAMETER_ARRAY_NAME
-XX_RATE_ARRAY_NAME
-XX_STATE_ARRAY_NAME
-XX_UNNAMED_ARRAY_NAME
-XX_VARIABLE_ARRAY_NAME
+YY_ALG_IN_ARRAY_NAME
+YY_ALG_OUT_ARRAY_NAME
+YY_CONSTANT_ARRAY_NAME
+YY_DEP_RATE_ARRAY_NAME
+YY_DEP_STATE_ARRAY_NAME
+YY_EXT_IN_ARRAY_NAME
+YY_EXT_OUT_ARRAY_NAME
+YY_FAVORITE_PARS_ARRAY_NAME
+YY_FAVORITE_VARS_ARRAY_NAME
+YY_INITIAL_VALUE_ARRAY_NAME
+YY_MATRIX_ARRAY_NAME
+YY_PARAMETER_ARRAY_NAME
+YY_RATE_ARRAY_NAME
+YY_STATE_ARRAY_NAME
+YY_UNNAMED_ARRAY_NAME
+YY_VARIABLE_ARRAY_NAME
 INTEGRATION_METHOD_NAME
 VARPREFIX
 FUNCTIONPREFIX
-XX_TIME
-XX_INITIALIZE
+YY_TIME
+YY_INITIALIZE
 EVENT_DELTA
 FORMAJORVERSION
 FORMINORVERSION

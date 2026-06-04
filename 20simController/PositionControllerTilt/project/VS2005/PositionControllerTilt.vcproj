@@ -171,7 +171,7 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			Filter="cpp;c;cc;cyy;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
@@ -183,37 +183,37 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxfuncs.c"
+				RelativePath="..\..\yyfuncs.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxinteg.c"
+				RelativePath="..\..\yyinteg.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxinverse.c"
+				RelativePath="..\..\yyinverse.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxmain.c"
+				RelativePath="..\..\yymain.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxmatrix.c"
+				RelativePath="..\..\yymatrix.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxmodel.c"
+				RelativePath="..\..\yymodel.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxsubmod.c"
+				RelativePath="..\..\yysubmod.c"
 				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+			Filter="h;hpp;hyy;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
@@ -225,27 +225,27 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxfuncs.h"
+				RelativePath="..\..\yyfuncs.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxinteg.h"
+				RelativePath="..\..\yyinteg.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxmatrix.h"
+				RelativePath="..\..\yymatrix.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxmodel.h"
+				RelativePath="..\..\yymodel.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxsubmod.h"
+				RelativePath="..\..\yysubmod.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\xxtypes.h"
+				RelativePath="..\..\yytypes.h"
 				>
 			</File>
 		</Filter>

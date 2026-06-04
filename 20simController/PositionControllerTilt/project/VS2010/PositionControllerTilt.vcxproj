@@ -125,23 +125,23 @@
   <ItemGroup>
     <ClInclude Include="..\..\EulerAngles.h" />
     <ClInclude Include="..\..\motionprofiles.h" />
-    <ClInclude Include="..\..\xxfuncs.h" />
-    <ClInclude Include="..\..\xxinteg.h" />
-    <ClInclude Include="..\..\xxmatrix.h" />
-    <ClInclude Include="..\..\xxmodel.h" />
-    <ClInclude Include="..\..\xxsubmod.h" />
-    <ClInclude Include="..\..\xxtypes.h" />
+    <ClInclude Include="..\..\yyfuncs.h" />
+    <ClInclude Include="..\..\yyinteg.h" />
+    <ClInclude Include="..\..\yymatrix.h" />
+    <ClInclude Include="..\..\yymodel.h" />
+    <ClInclude Include="..\..\yysubmod.h" />
+    <ClInclude Include="..\..\yytypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\EulerAngles.c" />
     <ClCompile Include="..\..\motionprofiles.c" />
-    <ClCompile Include="..\..\xxfuncs.c" />
-    <ClCompile Include="..\..\xxinteg.c" />
-    <ClCompile Include="..\..\xxinverse.c" />
-    <ClCompile Include="..\..\xxmain.c" />
-    <ClCompile Include="..\..\xxmatrix.c" />
-    <ClCompile Include="..\..\xxmodel.c" />
-    <ClCompile Include="..\..\xxsubmod.c" />
+    <ClCompile Include="..\..\yyfuncs.c" />
+    <ClCompile Include="..\..\yyinteg.c" />
+    <ClCompile Include="..\..\yyinverse.c" />
+    <ClCompile Include="..\..\yymain.c" />
+    <ClCompile Include="..\..\yymatrix.c" />
+    <ClCompile Include="..\..\yymodel.c" />
+    <ClCompile Include="..\..\yysubmod.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
