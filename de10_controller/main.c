@@ -38,7 +38,7 @@ void home_yaw() {
     uint16_t enc = 0;
     uint16_t enc_no = 0;
     get_encoders(&enc, &enc_no);
-    set_pwm(40, true, true, 0, false, false, false, false);
+    set_pwm(20, true, true, 0, false, false, false, false);
     sleep(1);
     do {
         printf("Homing... Current encoder: %d\n", enc);
@@ -55,7 +55,7 @@ void home_pitch() {
     uint16_t enc = 0;
     uint16_t enc_no = 0;
     get_encoders(&enc, &enc_no);
-    set_pwm(0, false, false, 40, true, true, false, false);
+    set_pwm(0, false, false, 20, true, true, false, false);
     sleep(1);
     do {
         printf("Homing... Current encoder: %d\n", enc);
