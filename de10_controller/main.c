@@ -179,7 +179,7 @@ int main(int argc, char** argv) {
         if (pitch_duty_cycle > 64) pitch_duty_cycle = 64;
         bool pitch_direction = pitch_y[1] < 0;
 
-        set_pwm(yaw_duty_cycle, yaw_direction, true, pitch_duty_cycle, pitch_direction, truncate, false, false);
+        set_pwm(yaw_duty_cycle, yaw_direction, true, pitch_duty_cycle, pitch_direction, true, false, false);
         // if (count_dir) {
         //     counter++;
         //     if (counter >= 2000) {
