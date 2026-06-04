@@ -158,7 +158,7 @@ int main(int argc, char** argv) {
         yaw_u[1] = yaw_position;
         XXCalculateSubmodel (yaw_u, yaw_y, xx_time);
         uint8_t yaw_duty_cycle = (uint8_t)(abs(yaw_y[1] * 255));
-        // if (duty_cycle > 128) duty_cycle = 128;
+        if (yaw_duty_cycle > 64) yaw_duty_cycle = 64;
         bool yaw_direction = yaw_y[1] < 0;
 
         int pitch_diff = pitch_encoder - prev_pitch_encoder;
@@ -176,7 +176,7 @@ int main(int argc, char** argv) {
         pitch_u[1] = pitch_position;
         YYCalculateSubmodel (pitch_u, pitch_y, yy_time);
         uint8_t pitch_duty_cycle = (uint8_t)(abs(pitch_y[1] * 255));
-        // if (duty_cycle > 128) duty_cycle = 128;
+        if (pitch_duty_cycle > 64) pitch_duty_cycle = 64;
         bool pitch_direction = pitch_y[1] < 0;
 
         set_pwm(yaw_duty_cycle, yaw_direction, true, pitch_duty_cycle, pitch_direction, truncate, false, false);
