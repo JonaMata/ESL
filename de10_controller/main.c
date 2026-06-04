@@ -109,6 +109,7 @@ int main(int argc, char** argv) {
 
     printf("Start homing...\n");
     home_yaw();
+    home_pitch();
     printf("Homing complete.\n");
 
 
