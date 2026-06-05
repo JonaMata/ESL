@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <signal.h>
 #include <time.h>
+#include <pthread.h>
 
 #include "soc_system.h"
 
@@ -80,7 +81,8 @@ unsigned int home(int motor) {
     return enc;
 }
 
-int main(int argc, char** argv) {
+
+void* controller(void* arg) {
     int fd = 0;
 
 
@@ -223,4 +225,11 @@ int main(int argc, char** argv) {
 
 	close(fd);
 	return 0;
+}
+
+int main(int argc, char** argv) {
+    pthread_t thread;
+    pthread_create(&thread, NULL, controller, NULL);
+    pthread_join(thread, NULL);
+    return 0;
 }
