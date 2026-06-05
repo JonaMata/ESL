@@ -228,14 +228,27 @@ void* controller(void* arg) {
 }
 
 int main(int argc, char** argv) {
-    sigset_t set;
-    sigemptyset(&set);
-    sigaddset(&set, SIGUSR1);
+    sigset_t sigusr_set;
+    sigemptyset(&sigusr_set);
+    sigaddset(&sigusr_set, SIGUSR1);
 
-    pthread_sigmask(SIG_BLOCK, &set, NULL);
+    pthread_sigmask(SIG_BLOCK, &sigusr_set, NULL);
 
     pthread_t thread;
     pthread_create(&thread, NULL, controller, NULL);
+
+
+    sigset_t set;
+    int sig;
+
+    // 1. Block SIGINT so sigwait can catch it synchronously
+    sigemptyset(&set);
+    sigaddset(&set, SIGINT);
+    pthread_sigmask(SIG_BLOCK, &set, NULL);
+
+    sigwait(&set, &sig);
+    pthread_cancel(thread);
     pthread_join(thread, NULL);
+    set_pwm(0, false, false, 0, false, false, false, false);
     return 0;
 }
