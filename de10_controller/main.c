@@ -15,9 +15,9 @@
 #include "yysubmod.h"
 
 XXDouble yaw_u [2 + 1];
-YYDouble pitch_u [2 + 1];
 XXDouble yaw_y [2 + 1];
-YYDouble pitch_y [2 + 1];
+YYDouble pitch_u [3 + 1];
+YYDouble pitch_y [1 + 1];
 
 uint8_t* jiwy_map = NULL;
 
@@ -116,13 +116,13 @@ int main(int argc, char** argv) {
     /* Initialize the inputs and outputs with correct initial values */
     yaw_u[0] = 0.0;		/* in */
     yaw_u[1] = 0.0;		/* position */
-    pitch_u[0] = 0.0;	/* in */
-    pitch_u[1] = 0.0;	/* position */
+    pitch_u[0] = 0.0;   /* corr */
+    pitch_u[1] = 0.0;	/* in */
+    pitch_u[2] = 0.0;	/* position */
 
     yaw_y[0] = 0.0;		/* corr */
     yaw_y[1] = 0.0;		/* out */
-    pitch_y[0] = 0.0;	/* corr */
-    pitch_y[1] = 0.0;	/* out */
+    pitch_y[0] = 0.0;	/* out */
 
 	XXInitializeSubmodel (yaw_u, yaw_y, xx_time);
     YYInitializeSubmodel (pitch_u, pitch_y, yy_time);
@@ -173,27 +173,27 @@ int main(int argc, char** argv) {
         }
         raw_pitch_position += pitch_diff;
         YYDouble pitch_position = (YYDouble)raw_pitch_position / 21708.8 * 2 * 3.1415926;
-        pitch_u[0] = (double)setpoint / 21708.8 * 2 * 3.1415926;
-        pitch_u[1] = pitch_position;
+        pitch_u[1] = (double)setpoint / 21708.8 * 2 * 3.1415926;
+        pitch_u[2] = pitch_position;
         YYCalculateSubmodel (pitch_u, pitch_y, yy_time);
-        uint8_t pitch_duty_cycle = (uint8_t)(abs(pitch_y[1] * 255));
+        uint8_t pitch_duty_cycle = (uint8_t)(abs(pitch_y[0] * 255));
         if (pitch_duty_cycle > 64) pitch_duty_cycle = 64;
-        bool pitch_direction = pitch_y[1] < 0;
+        bool pitch_direction = pitch_y[0] < 0;
 
         set_pwm(yaw_duty_cycle, yaw_direction, true, pitch_duty_cycle, pitch_direction, true, false, false);
-        // if (count_dir) {
-        //     counter++;
-        //     if (counter >= 2000) {
-        //         count_dir = false;
-        //         setpoint = 2000;
-        //     }
-        // } else {
-        //     counter--;
-        //     if (counter <= 500) {
-        //         count_dir = true;
-        //         setpoint = 500;
-        //     }
-        // }
+        if (count_dir) {
+            counter++;
+            if (counter >= 2000) {
+                count_dir = false;
+                setpoint = 7000;
+            }
+        } else {
+            counter--;
+            if (counter <= 500) {
+                count_dir = true;
+                setpoint = 3000;
+            }
+        }
     }
 
 
