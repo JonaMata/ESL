@@ -365,37 +365,8 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
     }
   }
 
-
-
   gst_video_frame_unmap(&frame);
 
-  // if (gst_buffer_map(buffer, &map, GST_MAP_READ))
-  // {
-  //   // Access raw frame data
-  //   g_print("Received buffer of size: %zu\n", map.size);
-
-  //   int size = 0;
-  //   int sum_x = 0;
-  //   int sum_y = 0;
-  //   for (gsize i = 0; i < map.size/3; i++)
-  //   {
-  //     uint8_t r = map.data[i*3];
-  //     uint8_t g = map.data[i*3 + 1];
-  //     uint8_t b = map.data[i*3 + 2];
-  //     if (g > 100 && r < 50 && b < 50) // Simple green pixel detection
-  //     {
-  //       size += 1;
-  //       sum_x += (i % 320); // Assuming width of 320
-  //       sum_y += (i / 320); // Assuming width of 320
-  //     }
-  //   }
-  //   double x_pos = size > 0 ? (double)sum_x / 320 : 0;
-  //   double y_pos = size > 0 ? (double)sum_y / 240 : 0;
-  //   g_print("Position: (%f, %f)\tSize: %d\n", x_pos, y_pos, size);
-  //   g_print("Center: r: %d, g: %d, b: %d\n", map.data[120*320*3+160], map.data[120*320*3+160+1], map.data[120*320*3+160+2]);
-
-  //   gst_buffer_unmap(buffer, &map);
-  // }
 
   gst_sample_unref(sample);
   return GST_FLOW_OK;
@@ -412,41 +383,6 @@ int main(int argc, char** argv) {
     pthread_create(&thread, NULL, controller, NULL);
 
     signal(SIGINT, exit);
-
-    // sigset_t set;
-    // int sig;
-
-    // // 1. Block SIGINT so sigwait can catch it synchronously
-    // sigemptyset(&set);
-    // sigaddset(&set, SIGINT);
-    // pthread_sigmask(SIG_BLOCK, &set, NULL);
-
-    // sigwait(&set, &sig);
-    // pthread_cancel(thread);
-    // pthread_join(thread, NULL);
-    // set_pwm(0, false, false, 0, false, false, false, false);
-
-    // int counter = 0;
-    // bool count_dir = true;
-    // while (running) {
-    //     usleep(1000); // Sleep for 100ms
-    //     if (count_dir) {
-    //         counter++;
-    //         if (counter >= 2000) {
-    //             count_dir = false;
-    //             yaw_setpoint = 7000;
-    //             pitch_setpoint = 3000;
-    //         }
-    //     } else {
-    //         counter--;
-    //         if (counter <= 0) {
-    //             count_dir = true;
-    //             yaw_setpoint = 3000;
-    //             pitch_setpoint = 7000;
-    //         }
-    //     }
-    // }
-    GMainLoop *loop;
 
     GstElement *pipeline, *source, *encoder, *capsfilter, *decoder, *sink, *convert;
     GstBus *bus;
@@ -484,13 +420,11 @@ int main(int argc, char** argv) {
 
     /* we set the input filename to the source element */
     g_object_set(G_OBJECT(source), "device", argv[1], NULL);
-    // g_object_set (G_OBJECT (sink), "location", "file.yuv", NULL);
 
     caps = gst_caps_new_simple("image/jpeg", "format", G_TYPE_STRING, "RGB", "width", G_TYPE_INT, 160, "height", G_TYPE_INT, 120, "framerate", GST_TYPE_FRACTION, 30, 1, NULL);
     g_object_set(G_OBJECT(capsfilter), "caps", caps, NULL);
     gst_caps_unref(caps);
 
-    // g_signal_connect(sink, "new-sample", G_CALLBACK(on_new_sample), NULL);
     GstAppSinkCallbacks callbacks = { NULL, NULL, on_new_sample };
     gst_app_sink_set_callbacks(GST_APP_SINK(sink), &callbacks, NULL, NULL);
 
@@ -500,17 +434,11 @@ int main(int argc, char** argv) {
     gst_object_unref(bus);
 
     /* we add all elements into the pipeline */
-    /* camera-source | jpeg-encoder | jpeg-decoder | file-output */
     gst_bin_add_many(GST_BIN(pipeline),
                     source, encoder, capsfilter, decoder, sink, convert, NULL);
 
-    /* we link the elements together */
-    /* camera-source -> jpeg-encoder -> jpeg-decoder -> file-output */
-    // gst_element_link(source, decoder);
     gst_element_link(source, convert);
     gst_element_link(convert, sink);
-    // gst_element_link(decoder, sink);
-    // gst_element_link(encoder, decoder);
 
     caps = gst_caps_new_simple(
         "video/x-raw",
