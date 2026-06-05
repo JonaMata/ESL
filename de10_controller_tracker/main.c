@@ -24,6 +24,8 @@
 #define MOTOR_YAW 0
 #define MOTOR_PITCH 1
 
+GMainLoop *loop;
+
 uint8_t* jiwy_map = NULL;
 
 int yaw_setpoint = 5000;
@@ -220,6 +222,7 @@ void* controller(void* arg) {
 
 void exit(int signum) {
     running = false;
+    g_main_loop_quit(loop);
 }
 
 
@@ -228,7 +231,7 @@ bus_call(GstBus *bus,
          GstMessage *msg,
          gpointer data)
 {
-  GMainLoop *loop = (GMainLoop *)data;
+  *loop = (GMainLoop *)data;
 
   switch (GST_MESSAGE_TYPE(msg))
   {
