@@ -244,7 +244,7 @@ int main(int argc, char** argv) {
     int counter = 0;
     bool count_dir = true;
     while (running) {
-        usleep(100000); // Sleep for 100ms
+        usleep(1000); // Sleep for 100ms
         if (count_dir) {
             counter++;
             if (counter >= 2000) {
