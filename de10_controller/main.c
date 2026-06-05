@@ -89,14 +89,14 @@ void* controller(void* arg) {
 	fd = open("/dev/mem", O_RDWR | O_SYNC);
 	if (fd < 0) {
 		perror("Couldn't open /dev/mem\n");
-		return -1;
+		// return -1;
 	}
 
 	jiwy_map = (uint8_t*)mmap(NULL, HPS_0_ARM_A9_0_JIWY_0_SPAN, PROT_READ | PROT_WRITE, MAP_SHARED, fd, HPS_0_ARM_A9_0_JIWY_0_BASE);
 	if (jiwy_map == MAP_FAILED) {
 		perror("Couldn't map JIWY.");
 		close(fd);
-		return -1;
+		// return -1;
 	}
 
     timer_t timer_id;
