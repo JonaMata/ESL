@@ -47,7 +47,7 @@ void get_encoders(uint16_t* yaw_encoder, uint16_t* pitch_encoder) {
     *pitch_encoder = (encoder_values >> 16) & 0xFFFF;
 }
 
-unsigned int home(int motor) {
+int home(int motor) {
     uint16_t prev_enc = 0;
     uint16_t enc = 0;
     uint16_t enc_no = 0;
@@ -133,8 +133,8 @@ void* controller(void* arg) {
     timer_settime(timer_id, 0, &its, NULL);
 
     printf("Start homing...\n");
-    unsigned int yaw_max = home(MOTOR_YAW);
-    unsigned int pitch_max = home(MOTOR_PITCH);
+    int yaw_max = home(MOTOR_YAW);
+    int pitch_max = home(MOTOR_PITCH);
     printf("Homing complete.\n");
 
     XXDouble yaw_u [2 + 1];
@@ -539,7 +539,6 @@ int main(int argc, char** argv) {
     g_source_remove(bus_watch_id);
     g_main_loop_unref(loop);
 
-    return 0;
     printf("Exiting...\n");
     pthread_cancel(thread);
     pthread_join(thread, NULL);
