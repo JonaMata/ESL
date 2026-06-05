@@ -113,7 +113,7 @@ void YYModelInitialize_parameters(void)
 	/* set the parameters */
 	yy_P[0] = 0.0;		/* corrGain\K */
 	yy_P[1] = 1.6;		/* PID1\kp */
-	yy_P[2] = 0.2;//0.05;		/* PID1\tauD */
+	yy_P[2] = 0.3;//0.05;		/* PID1\tauD */
 	yy_P[3] = 0.001;		/* PID1\beta */
 	yy_P[4] = 10.5;		/* PID1\tauI */
 	yy_P[5] = -0.99;		/* SignalLimiter2\minimum */
