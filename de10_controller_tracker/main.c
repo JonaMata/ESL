@@ -342,11 +342,11 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
   g_print("Position: (%f, %f)\tSize: %d\n", x_pos, y_pos, size);
 
   if (size > 1000) {
-    yaw_diff = (int)(x_pos - width/2) * 5;
+    int yaw_diff = (int)(x_pos - width/2) * 5;
     if (abs(yaw_diff) > 50) {
         yaw_setpoint += yaw_diff;
     }
-    pitch_diff = (int)(y_pos - height/2) * 5;
+    int pitch_diff = (int)(y_pos - height/2) * 5;
     if (abs(pitch_diff) > 50) {
         pitch_setpoint += pitch_diff;
     }
