@@ -14,6 +14,9 @@
 #include "xxsubmod.h"
 #include "yysubmod.h"
 
+#define MOTOR_YAW 0
+#define MOTOR_PITCH 1
+
 XXDouble yaw_u [2 + 1];
 XXDouble yaw_y [2 + 1];
 YYDouble pitch_u [3 + 1];
@@ -33,38 +36,48 @@ void get_encoders(uint16_t* yaw_encoder, uint16_t* pitch_encoder) {
     *pitch_encoder = (encoder_values >> 16) & 0xFFFF;
 }
 
-void home_yaw() {
+unsigned int home(int motor) {
     uint16_t prev_enc = 0;
     uint16_t enc = 0;
     uint16_t enc_no = 0;
-    get_encoders(&enc, &enc_no);
-    set_pwm(20, true, true, 0, false, false, false, false);
-    sleep(1);
-    do {
-        printf("Homing... Current encoder: %d\n", enc);
-        sleep(1);
-        prev_enc = enc;
+    if (motor == MOTOR_YAW) {
         get_encoders(&enc, &enc_no);
-    } while (prev_enc-enc != 0);
-    set_pwm(20, true, true, 0, false, false, true, false);
-    set_pwm(0, false, false, 0, false, false, false, false);
-}
-
-void home_pitch() {
-    uint16_t prev_enc = 0;
-    uint16_t enc = 0;
-    uint16_t enc_no = 0;
-    get_encoders(&enc, &enc_no);
-    set_pwm(0, false, false, 20, true, true, false, false);
+        set_pwm(20, true, true, 0, false, false, false, false);
+    } else {
+        get_encoders(&enc_no, &enc);
+        set_pwm(0, false, false, 20, true, true, false, false);
+    }
     sleep(1);
     do {
         printf("Homing... Current encoder: %d\n", enc);
         sleep(1);
         prev_enc = enc;
-        get_encoders(&enc_no, &enc);
+        if (motor == MOTOR_YAW) {
+            get_encoders(&enc, &enc_no);
+        } else {
+            get_encoders(&enc_no, &enc);
+        }
     } while (prev_enc-enc != 0);
-    set_pwm(0, false, false, 20, true, true, false, true);
+    if (motor == MOTOR_YAW) {
+        set_pwm(20, true, true, 0, false, false, true, false);
+        set_pwm(20, false, true, 0, false, false, false, false);
+    } else {
+        set_pwm(0, false, false, 20, true, true, false, true);
+        set_pwm(0, false, false, 0, false, false, false, false);
+    }
+    sleep(1);
+    do {
+        printf("Homing... Current encoder: %d\n", enc);
+        sleep(1);
+        prev_enc = enc;
+        if (motor == MOTOR_YAW) {
+            get_encoders(&enc, &enc_no);
+        } else {
+            get_encoders(&enc_no, &enc);
+        }
+    } while (prev_enc-enc != 0);
     set_pwm(0, false, false, 0, false, false, false, false);
+    return enc;
 }
 
 int main(int argc, char** argv) {
@@ -108,8 +121,8 @@ int main(int argc, char** argv) {
     timer_settime(timer_id, 0, &its, NULL);
 
     printf("Start homing...\n");
-    home_yaw();
-    home_pitch();
+    unsigned int yaw_max = home(MOTOR_YAW);
+    unsigned int pitch_max = home(MOTOR_PITCH);
     printf("Homing complete.\n");
 
 
@@ -137,13 +150,18 @@ int main(int argc, char** argv) {
     printf("Starting control loop...\n");
     int counter = 1200;
     bool count_dir = true;
-    int setpoint = 5000;
+    int yaw_setpoint = 5000;
+    int pitch_setpoint = 5000;
     while (1) {
         int sig;
         sigwait(&sigset, &sig);
+
+        // Setpoint clamping
+        yaw_setpoint = (yaw_setpoint > yaw_max) ? yaw_max : ((yaw_setpoint < 0) ? 0 : yaw_setpoint);
+        pitch_setpoint = (pitch_setpoint > pitch_max) ? pitch_max : ((pitch_setpoint < 0) ? 0 : pitch_setpoint);
+
         printf("Timer tick\n");
         get_encoders(&yaw_encoder, &pitch_encoder);
-
         int yaw_diff = yaw_encoder - prev_yaw_encoder;
         prev_yaw_encoder = yaw_encoder;
         if (abs(yaw_diff) > 32768) {
@@ -155,7 +173,7 @@ int main(int argc, char** argv) {
         }
         raw_yaw_position += yaw_diff;
         XXDouble yaw_position = (XXDouble)raw_yaw_position / 21708.8 * 2 * 3.1415926;
-        yaw_u[0] = (double)setpoint / 21708.8 * 2 * 3.1415926;
+        yaw_u[0] = (double)yaw_setpoint / 21708.8 * 2 * 3.1415926;
         yaw_u[1] = yaw_position;
         XXCalculateSubmodel (yaw_u, yaw_y, xx_time);
         uint8_t yaw_duty_cycle = (uint8_t)(abs(yaw_y[1] * 255));
@@ -173,7 +191,7 @@ int main(int argc, char** argv) {
         }
         raw_pitch_position += pitch_diff;
         YYDouble pitch_position = (YYDouble)raw_pitch_position / 21708.8 * 2 * 3.1415926;
-        pitch_u[1] = (double)setpoint / 21708.8 * 2 * 3.1415926;
+        pitch_u[1] = (double)pitch_setpoint / 21708.8 * 2 * 3.1415926;
         pitch_u[2] = pitch_position;
         YYCalculateSubmodel (pitch_u, pitch_y, yy_time);
         uint8_t pitch_duty_cycle = (uint8_t)(abs(pitch_y[0] * 255));
@@ -185,13 +203,15 @@ int main(int argc, char** argv) {
             counter++;
             if (counter >= 2000) {
                 count_dir = false;
-                setpoint = 7000;
+                yaw_setpoint = 7000;
+                pitch_setpoint = 3000;
             }
         } else {
             counter--;
             if (counter <= 500) {
                 count_dir = true;
-                setpoint = 3000;
+                yaw_setpoint = 3000;
+                pitch_setpoint = 7000;
             }
         }
     }
