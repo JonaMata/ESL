@@ -170,8 +170,12 @@ void* controller(void* arg) {
         sigwait(&sigset, &sig);
 
         // Setpoint clamping
-        yaw_setpoint = (yaw_setpoint > yaw_max) ? yaw_max : ((yaw_setpoint < 0) ? 0 : yaw_setpoint);
-        pitch_setpoint = (pitch_setpoint > pitch_max) ? pitch_max : ((pitch_setpoint < 0) ? 0 : pitch_setpoint);
+        // yaw_setpoint = (yaw_setpoint > yaw_max) ? yaw_max : ((yaw_setpoint < 0) ? 0 : yaw_setpoint);
+        // pitch_setpoint = (pitch_setpoint > pitch_max) ? pitch_max : ((pitch_setpoint < 0) ? 0 : pitch_setpoint);
+        if (yaw_setpoint > yaw_max) yaw_setpoint = yaw_max;
+        if (yaw_setpoint < 0) yaw_setpoint = 0;
+        if (pitch_setpoint > pitch_max) pitch_setpoint = pitch_max;
+        if (pitch_setpoint < 0) pitch_setpoint = 0;
 
         // printf("Timer tick\n");
         get_encoders(&yaw_encoder, &pitch_encoder);
@@ -347,16 +351,16 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
   g_print("Position: (%f, %f)\tSize: %d\n", x_pos, y_pos, size);
 
   frame_count++;
-  if (frame_count == 6) {
+  if (frame_count == 1) {
     frame_count = 0;
     if (size > 1000) {
         int yaw_diff = (int)(x_pos - width/2);
         if (abs(yaw_diff) > 50) {
-            yaw_setpoint += yaw_diff*10;
+            yaw_setpoint += yaw_diff*2;
         }
         int pitch_diff = (int)(y_pos - height/2);
         if (abs(pitch_diff) > 50) {
-            pitch_setpoint += pitch_diff*10;
+            pitch_setpoint += pitch_diff*2;
         }
     }
   }
