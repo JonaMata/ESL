@@ -231,7 +231,7 @@ bus_call(GstBus *bus,
          GstMessage *msg,
          gpointer data)
 {
-  *loop = (GMainLoop *)data;
+  loop = (GMainLoop *)data;
 
   switch (GST_MESSAGE_TYPE(msg))
   {
