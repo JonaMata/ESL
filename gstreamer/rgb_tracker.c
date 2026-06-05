@@ -118,8 +118,8 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
     }
   }
 
-  double x_pos = size > 0 ? (double)sum_x / size : 0;
-  double y_pos = size > 0 ? (double)sum_y / size : 0;
+  double x_pos = size > 1000 ? (double)sum_x / size : -1;
+  double y_pos = size > 1000 ? (double)sum_y / size : -1;
   g_print("Position: (%f, %f)\tSize: %d\n", x_pos, y_pos, size);
 
 
