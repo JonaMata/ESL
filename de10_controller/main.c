@@ -210,7 +210,6 @@ void* controller(void* arg) {
 
 
 	close(fd);
-	return 0;
 }
 
 void exit(int signum) {
