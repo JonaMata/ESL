@@ -33,6 +33,8 @@ int pitch_setpoint = 5000;
 
 bool running = true;
 
+int frame_count = 0;
+
 void set_pwm(uint8_t yaw_duty_cycle, bool yaw_direction, bool yaw_enable, uint8_t pitch_duty_cycle, bool pitch_direction, bool pitch_enable, bool yaw_reset, bool pitch_reset) {
     *((uint32_t *)jiwy_map) = yaw_duty_cycle | yaw_enable << 8 | yaw_direction << 9
         | pitch_duty_cycle << 10 | pitch_enable << 18 | pitch_direction << 19
@@ -344,16 +346,21 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
   double y_pos = size > 1000 ? (double)sum_y / size : -1;
   g_print("Position: (%f, %f)\tSize: %d\n", x_pos, y_pos, size);
 
-  if (size > 1000) {
-    int yaw_diff = (int)(x_pos - width/2);
-    if (abs(yaw_diff) > 50) {
-        yaw_setpoint += yaw_diff*5;
-    }
-    int pitch_diff = (int)(y_pos - height/2);
-    if (abs(pitch_diff) > 50) {
-        pitch_setpoint += pitch_diff*5;
+  frame_count++;
+  if (frame_count == 6) {
+    frame_count = 0;
+    if (size > 1000) {
+        int yaw_diff = (int)(x_pos - width/2);
+        if (abs(yaw_diff) > 50) {
+            yaw_setpoint += yaw_diff*20;
+        }
+        int pitch_diff = (int)(y_pos - height/2);
+        if (abs(pitch_diff) > 50) {
+            pitch_setpoint += pitch_diff*20;
+        }
     }
   }
+
 
 
   gst_video_frame_unmap(&frame);
