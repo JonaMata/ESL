@@ -59,7 +59,7 @@ unsigned int home(int motor) {
         set_pwm(20, false, true, 0, false, false, false, false);
     } else {
         set_pwm(0, false, false, 20, true, true, false, true);
-        set_pwm(0, false, false, 0, false, false, false, false);
+        set_pwm(0, false, false, 20, false, true, false, false);
     }
     sleep(1);
     do {
