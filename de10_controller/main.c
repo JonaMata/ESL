@@ -242,7 +242,7 @@ int main(int argc, char** argv) {
     // pthread_join(thread, NULL);
     // set_pwm(0, false, false, 0, false, false, false, false);
 
-    int counter = 1200;
+    int counter = 0;
     bool count_dir = true;
     while (running) {
         sleep(.1);
@@ -255,7 +255,7 @@ int main(int argc, char** argv) {
             }
         } else {
             counter--;
-            if (counter <= 500) {
+            if (counter <= 0) {
                 count_dir = true;
                 yaw_setpoint = 3000;
                 pitch_setpoint = 7000;
