@@ -1,0 +1,1 @@
+gcc main.c PositionControllerPan/*.c PositionControllerTilt/*.c -o main -I PositionControllerPan/ -I PositionControllerTilt/ ${pkg-config --cflags --libs gstreamer-1.0 gstreamer-app-1.0 gstreamer-video-1.0}
