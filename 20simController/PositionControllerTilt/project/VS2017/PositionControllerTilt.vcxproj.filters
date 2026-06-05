@@ -3,11 +3,11 @@
   <ItemGroup>
     <Filter Include="Source Files">
       <UniqueIdentifier>{93f68fc4-415a-4f86-9aef-6121aecb762a}</UniqueIdentifier>
-      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+      <Extensions>cpp;c;cyy;rc;def;r;odl;idl;hpj;bat</Extensions>
     </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{8d51af92-9e30-4556-84af-0457748d126e}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+      <Extensions>h;hpp;hyy;hm;inl</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -17,22 +17,22 @@
     <ClInclude Include="..\..\motionprofiles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xxfuncs.h">
+    <ClInclude Include="..\..\yyfuncs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xxinteg.h">
+    <ClInclude Include="..\..\yyinteg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xxmatrix.h">
+    <ClInclude Include="..\..\yymatrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xxmodel.h">
+    <ClInclude Include="..\..\yymodel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xxsubmod.h">
+    <ClInclude Include="..\..\yysubmod.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xxtypes.h">
+    <ClInclude Include="..\..\yytypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -43,25 +43,25 @@
     <ClCompile Include="..\..\motionprofiles.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xxfuncs.c">
+    <ClCompile Include="..\..\yyfuncs.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xxinteg.c">
+    <ClCompile Include="..\..\yyinteg.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xxinverse.c">
+    <ClCompile Include="..\..\yyinverse.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xxmain.c">
+    <ClCompile Include="..\..\yymain.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xxmatrix.c">
+    <ClCompile Include="..\..\yymatrix.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xxmodel.c">
+    <ClCompile Include="..\..\yymodel.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xxsubmod.c">
+    <ClCompile Include="..\..\yysubmod.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

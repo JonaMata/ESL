@@ -1,0 +1,1 @@
+gcc main.c PositionControllerPan/*.c PositionControllerTilt/*.c -o main -I PositionControllerPan/ -I PositionControllerTilt/

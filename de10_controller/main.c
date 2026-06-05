@@ -12,9 +12,12 @@
 #include "soc_system.h"
 
 #include "xxsubmod.h"
+#include "yysubmod.h"
 
-XXDouble u [2 + 1];
-XXDouble y [2 + 1];
+XXDouble yaw_u [2 + 1];
+YYDouble pitch_u [2 + 1];
+XXDouble yaw_y [2 + 1];
+YYDouble pitch_y [2 + 1];
 
 uint8_t* jiwy_map = NULL;
 
@@ -35,7 +38,7 @@ void home_yaw() {
     uint16_t enc = 0;
     uint16_t enc_no = 0;
     get_encoders(&enc, &enc_no);
-    set_pwm(40, true, true, 0, false, false, false, false);
+    set_pwm(20, true, true, 0, false, false, false, false);
     sleep(1);
     do {
         printf("Homing... Current encoder: %d\n", enc);
@@ -43,7 +46,24 @@ void home_yaw() {
         prev_enc = enc;
         get_encoders(&enc, &enc_no);
     } while (prev_enc-enc != 0);
-    set_pwm(0, false, false, 0, false, false, true, false);
+    set_pwm(20, true, true, 0, false, false, true, false);
+    set_pwm(0, false, false, 0, false, false, false, false);
+}
+
+void home_pitch() {
+    uint16_t prev_enc = 0;
+    uint16_t enc = 0;
+    uint16_t enc_no = 0;
+    get_encoders(&enc, &enc_no);
+    set_pwm(0, false, false, 20, true, true, false, false);
+    sleep(1);
+    do {
+        printf("Homing... Current encoder: %d\n", enc);
+        sleep(1);
+        prev_enc = enc;
+        get_encoders(&enc_no, &enc);
+    } while (prev_enc-enc != 0);
+    set_pwm(0, false, false, 20, true, true, false, true);
     set_pwm(0, false, false, 0, false, false, false, false);
 }
 
@@ -89,22 +109,30 @@ int main(int argc, char** argv) {
 
     printf("Start homing...\n");
     home_yaw();
+    home_pitch();
     printf("Homing complete.\n");
 
 
     /* Initialize the inputs and outputs with correct initial values */
-    u[0] = 0.0;		/* in */
-    u[1] = 0.0;		/* position */
+    yaw_u[0] = 0.0;		/* in */
+    yaw_u[1] = 0.0;		/* position */
+    pitch_u[0] = 0.0;	/* in */
+    pitch_u[1] = 0.0;	/* position */
 
-    y[0] = 0.0;		/* corr */
-    y[1] = 0.0;		/* out */
+    yaw_y[0] = 0.0;		/* corr */
+    yaw_y[1] = 0.0;		/* out */
+    pitch_y[0] = 0.0;	/* corr */
+    pitch_y[1] = 0.0;	/* out */
 
-	XXInitializeSubmodel (u, y, xx_time);
+	XXInitializeSubmodel (yaw_u, yaw_y, xx_time);
+    YYInitializeSubmodel (pitch_u, pitch_y, yy_time);
 
     uint16_t yaw_encoder;
     uint16_t pitch_encoder;
     uint16_t prev_yaw_encoder = 0;
-    int raw_position = 0;
+    uint16_t prev_pitch_encoder = 0;
+    int raw_yaw_position = 0;
+    int raw_pitch_position = 0;
 
     printf("Starting control loop...\n");
     int counter = 1200;
@@ -115,24 +143,44 @@ int main(int argc, char** argv) {
         sigwait(&sigset, &sig);
         printf("Timer tick\n");
         get_encoders(&yaw_encoder, &pitch_encoder);
-        int diff = yaw_encoder - prev_yaw_encoder;
+
+        int yaw_diff = yaw_encoder - prev_yaw_encoder;
         prev_yaw_encoder = yaw_encoder;
-        if (abs(diff) > 32768) {
-            if (diff > 0) {
-                diff -= 65536;
+        if (abs(yaw_diff) > 32768) {
+            if (yaw_diff > 0) {
+                yaw_diff -= 65536;
             } else {
-                diff += 65536;
+                yaw_diff += 65536;
             }
         }
-        raw_position += diff;
-        XXDouble position = (XXDouble)raw_position / 21708.8 * 2 * 3.1415926;
-        u[0] = (double)setpoint / 21708.8 * 2 * 3.1415926;
-        u[1] = position;
-        XXCalculateSubmodel (u, y, xx_time);
-        uint8_t duty_cycle = (uint8_t)(abs(y[1] * 255));
-        // if (duty_cycle > 128) duty_cycle = 128;
-        bool direction = y[1] < 0;
-        set_pwm(duty_cycle, direction, true, 0, false, false, false, false);
+        raw_yaw_position += yaw_diff;
+        XXDouble yaw_position = (XXDouble)raw_yaw_position / 21708.8 * 2 * 3.1415926;
+        yaw_u[0] = (double)setpoint / 21708.8 * 2 * 3.1415926;
+        yaw_u[1] = yaw_position;
+        XXCalculateSubmodel (yaw_u, yaw_y, xx_time);
+        uint8_t yaw_duty_cycle = (uint8_t)(abs(yaw_y[1] * 255));
+        if (yaw_duty_cycle > 64) yaw_duty_cycle = 64;
+        bool yaw_direction = yaw_y[1] < 0;
+
+        int pitch_diff = pitch_encoder - prev_pitch_encoder;
+        prev_pitch_encoder = pitch_encoder;
+        if (abs(pitch_diff) > 32768) {
+            if (pitch_diff > 0) {
+                pitch_diff -= 65536;
+            } else {
+                pitch_diff += 65536;
+            }
+        }
+        raw_pitch_position += pitch_diff;
+        YYDouble pitch_position = (YYDouble)raw_pitch_position / 21708.8 * 2 * 3.1415926;
+        pitch_u[0] = (double)setpoint / 21708.8 * 2 * 3.1415926;
+        pitch_u[1] = pitch_position;
+        YYCalculateSubmodel (pitch_u, pitch_y, yy_time);
+        uint8_t pitch_duty_cycle = (uint8_t)(abs(pitch_y[1] * 255));
+        if (pitch_duty_cycle > 64) pitch_duty_cycle = 64;
+        bool pitch_direction = pitch_y[1] < 0;
+
+        set_pwm(yaw_duty_cycle, yaw_direction, true, pitch_duty_cycle, pitch_direction, true, false, false);
         // if (count_dir) {
         //     counter++;
         //     if (counter >= 2000) {
@@ -149,7 +197,8 @@ int main(int argc, char** argv) {
     }
 
 
-	XXTerminateSubmodel (u, y, xx_time);
+	XXTerminateSubmodel (yaw_u, yaw_y, xx_time);
+    YYTerminateSubmodel (pitch_u, pitch_y, yy_time);
 
 
 	close(fd);
