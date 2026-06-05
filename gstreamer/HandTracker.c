@@ -52,9 +52,33 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
   {
     // Access raw frame data
     g_print("Received buffer of size: %zu\n", map.size);
+    int width = 320; // Set to your frame width
+    int height = 240; // Set to your frame height
+    long sum_x = 0;
+    long sum_y = 0;
+    long count = 0;
 
-    // Hand detection logic here ----------------------------------
-    
+    // Green ball detection logic here ----------------------------------
+    for (size_t i = 0; i < map.size; i += 3)
+    {
+      uint8_t r = data[i];
+      uint8_t g = data[i + 1];
+      uint8_t b = data[i + 2];
+      int x = (i / 3) % width;
+      int y = (i / 3) / width;
+      if (r < 75 && g > 200 && b < 75){
+        sum_x += x;
+        sum_y += y;
+        count++;
+      }
+    }
+    if (count > 0)
+    {
+        double cx = (double)sum_x / count;
+        double cy = (double)sum_y / count;
+
+        g_print("Ball centre: (%f, %f)\t Ball size: %ld\n", cx, cy, count);
+    }
 
     gst_buffer_unmap(buffer, &map);
   }
@@ -105,7 +129,7 @@ int main(int argc,
   g_object_set(G_OBJECT(source), "device", argv[1], NULL);
   // g_object_set (G_OBJECT (sink), "location", "file.yuv", NULL);
 
-  caps = gst_caps_new_simple("image/jpeg", "width", G_TYPE_INT, 160, "height", G_TYPE_INT, 120, "framerate", GST_TYPE_FRACTION, 30, 1, NULL);
+  caps = gst_caps_new_simple("image/jpeg", "format", G_TYPE_STRING, "RGB", "width", G_TYPE_INT, 160, "height", G_TYPE_INT, 120, "framerate", GST_TYPE_FRACTION, 30, 1, NULL);
   g_object_set(G_OBJECT(capsfilter), "caps", caps, NULL);
   gst_caps_unref(caps);
 
