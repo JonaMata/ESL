@@ -342,8 +342,8 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
   g_print("Position: (%f, %f)\tSize: %d\n", x_pos, y_pos, size);
 
   if (size > 1000) {
-    yaw_setpoint += (x_pos - width/2) * .1;
-    pitch_setpoint += (y_pos - height/2) * .1;
+    yaw_setpoint += (x_pos - width/2) * 1;
+    pitch_setpoint += (y_pos - height/2) * 1;
   }
 
 
