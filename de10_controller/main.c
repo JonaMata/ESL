@@ -181,19 +181,19 @@ int main(int argc, char** argv) {
         bool pitch_direction = pitch_y[0] < 0;
 
         set_pwm(yaw_duty_cycle, yaw_direction, true, pitch_duty_cycle, pitch_direction, true, false, false);
-        // if (count_dir) {
-        //     counter++;
-        //     if (counter >= 2000) {
-        //         count_dir = false;
-        //         setpoint = 2000;
-        //     }
-        // } else {
-        //     counter--;
-        //     if (counter <= 500) {
-        //         count_dir = true;
-        //         setpoint = 500;
-        //     }
-        // }
+        if (count_dir) {
+            counter++;
+            if (counter >= 2000) {
+                count_dir = false;
+                setpoint = 7000;
+            }
+        } else {
+            counter--;
+            if (counter <= 500) {
+                count_dir = true;
+                setpoint = 3000;
+            }
+        }
     }
 
 
