@@ -18,11 +18,6 @@
 #define MOTOR_YAW 0
 #define MOTOR_PITCH 1
 
-XXDouble yaw_u [2 + 1];
-XXDouble yaw_y [2 + 1];
-YYDouble pitch_u [3 + 1];
-YYDouble pitch_y [1 + 1];
-
 uint8_t* jiwy_map = NULL;
 
 void set_pwm(uint8_t yaw_duty_cycle, bool yaw_direction, bool yaw_enable, uint8_t pitch_duty_cycle, bool pitch_direction, bool pitch_enable, bool yaw_reset, bool pitch_reset) {
@@ -127,6 +122,11 @@ void* controller(void* arg) {
     unsigned int pitch_max = home(MOTOR_PITCH);
     printf("Homing complete.\n");
 
+    XXDouble yaw_u [2 + 1];
+    XXDouble yaw_y [2 + 1];
+    YYDouble pitch_u [3 + 1];
+    YYDouble pitch_y [1 + 1];
+
 
     /* Initialize the inputs and outputs with correct initial values */
     yaw_u[0] = 0.0;		/* in */
@@ -228,6 +228,12 @@ void* controller(void* arg) {
 }
 
 int main(int argc, char** argv) {
+    sigset_t set;
+    sigemptyset(&set);
+    sigaddset(&set, SIGUSR1);
+
+    pthread_sigmask(SIG_BLOCK, &set, NULL);
+
     pthread_t thread;
     pthread_create(&thread, NULL, controller, NULL);
     pthread_join(thread, NULL);
