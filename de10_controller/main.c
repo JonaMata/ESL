@@ -163,7 +163,7 @@ void* controller(void* arg) {
         yaw_setpoint = (yaw_setpoint > yaw_max) ? yaw_max : ((yaw_setpoint < 0) ? 0 : yaw_setpoint);
         pitch_setpoint = (pitch_setpoint > pitch_max) ? pitch_max : ((pitch_setpoint < 0) ? 0 : pitch_setpoint);
 
-        printf("Timer tick\n");
+        // printf("Timer tick\n");
         get_encoders(&yaw_encoder, &pitch_encoder);
         int yaw_diff = yaw_encoder - prev_yaw_encoder;
         prev_yaw_encoder = yaw_encoder;
@@ -244,7 +244,7 @@ int main(int argc, char** argv) {
     int counter = 0;
     bool count_dir = true;
     while (running) {
-        sleep(.1);
+        usleep(100000); // Sleep for 100ms
         if (count_dir) {
             counter++;
             if (counter >= 2000) {
@@ -261,8 +261,10 @@ int main(int argc, char** argv) {
             }
         }
     }
+    printf("Exiting...\n");
     pthread_cancel(thread);
     pthread_join(thread, NULL);
     set_pwm(0, false, false, 0, false, false, false, false);
+    printf("Exited.\n");
     return 0;
 }
