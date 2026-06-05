@@ -111,7 +111,7 @@ void XXModelInitialize_parameters(void)
 	/* set the parameters */
 	xx_P[0] = 0.0;		/* corrGain\K */
 	xx_P[1] = 2.6;		/* PID1\kp */
-	xx_P[2] = 0.03;//0.05;		/* PID1\tauD */
+	xx_P[2] = 0.3;//0.05;		/* PID1\tauD */
 	xx_P[3] = 0.17;		/* PID1\beta */
 	xx_P[4] = 9.0;		/* PID1\tauI */
 	xx_P[5] = -0.99;		/* SignalLimiter2\minimum */
