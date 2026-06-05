@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <gst/gst.h>
 #include <glib.h>
 #include <gst/app/gstappsink.h>
