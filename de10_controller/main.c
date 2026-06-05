@@ -20,6 +20,11 @@
 
 uint8_t* jiwy_map = NULL;
 
+int yaw_setpoint = 5000;
+int pitch_setpoint = 5000;
+
+bool running = true;
+
 void set_pwm(uint8_t yaw_duty_cycle, bool yaw_direction, bool yaw_enable, uint8_t pitch_duty_cycle, bool pitch_direction, bool pitch_enable, bool yaw_reset, bool pitch_reset) {
     *((uint32_t *)jiwy_map) = yaw_duty_cycle | yaw_enable << 8 | yaw_direction << 9
         | pitch_duty_cycle << 10 | pitch_enable << 18 | pitch_direction << 19
@@ -150,10 +155,6 @@ void* controller(void* arg) {
     int raw_pitch_position = 0;
 
     printf("Starting control loop...\n");
-    int counter = 1200;
-    bool count_dir = true;
-    int yaw_setpoint = 5000;
-    int pitch_setpoint = 5000;
     while (1) {
         int sig;
         sigwait(&sigset, &sig);
@@ -201,6 +202,50 @@ void* controller(void* arg) {
         bool pitch_direction = pitch_y[0] < 0;
 
         set_pwm(yaw_duty_cycle, yaw_direction, true, pitch_duty_cycle, pitch_direction, true, false, false);
+    }
+
+
+	XXTerminateSubmodel (yaw_u, yaw_y, xx_time);
+    YYTerminateSubmodel (pitch_u, pitch_y, yy_time);
+
+
+	close(fd);
+	return 0;
+}
+
+void exit(int signum) {
+    running = false;
+}
+
+int main(int argc, char** argv) {
+    sigset_t sigusr_set;
+    sigemptyset(&sigusr_set);
+    sigaddset(&sigusr_set, SIGUSR1);
+
+    pthread_sigmask(SIG_BLOCK, &sigusr_set, NULL);
+
+    pthread_t thread;
+    pthread_create(&thread, NULL, controller, NULL);
+
+    signal(SIGINT, exit);
+
+    // sigset_t set;
+    // int sig;
+
+    // // 1. Block SIGINT so sigwait can catch it synchronously
+    // sigemptyset(&set);
+    // sigaddset(&set, SIGINT);
+    // pthread_sigmask(SIG_BLOCK, &set, NULL);
+
+    // sigwait(&set, &sig);
+    // pthread_cancel(thread);
+    // pthread_join(thread, NULL);
+    // set_pwm(0, false, false, 0, false, false, false, false);
+
+    int counter = 1200;
+    bool count_dir = true;
+    while (running) {
+        sleep(.1);
         if (count_dir) {
             counter++;
             if (counter >= 2000) {
@@ -217,38 +262,5 @@ void* controller(void* arg) {
             }
         }
     }
-
-
-	XXTerminateSubmodel (yaw_u, yaw_y, xx_time);
-    YYTerminateSubmodel (pitch_u, pitch_y, yy_time);
-
-
-	close(fd);
-	return 0;
-}
-
-int main(int argc, char** argv) {
-    sigset_t sigusr_set;
-    sigemptyset(&sigusr_set);
-    sigaddset(&sigusr_set, SIGUSR1);
-
-    pthread_sigmask(SIG_BLOCK, &sigusr_set, NULL);
-
-    pthread_t thread;
-    pthread_create(&thread, NULL, controller, NULL);
-
-
-    sigset_t set;
-    int sig;
-
-    // 1. Block SIGINT so sigwait can catch it synchronously
-    sigemptyset(&set);
-    sigaddset(&set, SIGINT);
-    pthread_sigmask(SIG_BLOCK, &set, NULL);
-
-    sigwait(&set, &sig);
-    pthread_cancel(thread);
-    pthread_join(thread, NULL);
-    set_pwm(0, false, false, 0, false, false, false, false);
     return 0;
 }
