@@ -262,5 +262,8 @@ int main(int argc, char** argv) {
             }
         }
     }
+    pthread_cancel(thread);
+    pthread_join(thread, NULL);
+    set_pwm(0, false, false, 0, false, false, false, false);
     return 0;
 }
