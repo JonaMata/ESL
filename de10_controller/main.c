@@ -8,18 +8,22 @@
 #include <stdbool.h>
 #include <signal.h>
 #include <time.h>
+#include <pthread.h>
 
 #include "soc_system.h"
 
 #include "xxsubmod.h"
 #include "yysubmod.h"
 
-XXDouble yaw_u [2 + 1];
-XXDouble yaw_y [2 + 1];
-YYDouble pitch_u [3 + 1];
-YYDouble pitch_y [1 + 1];
+#define MOTOR_YAW 0
+#define MOTOR_PITCH 1
 
 uint8_t* jiwy_map = NULL;
+
+int yaw_setpoint = 5000;
+int pitch_setpoint = 5000;
+
+bool running = true;
 
 void set_pwm(uint8_t yaw_duty_cycle, bool yaw_direction, bool yaw_enable, uint8_t pitch_duty_cycle, bool pitch_direction, bool pitch_enable, bool yaw_reset, bool pitch_reset) {
     *((uint32_t *)jiwy_map) = yaw_duty_cycle | yaw_enable << 8 | yaw_direction << 9
@@ -33,55 +37,66 @@ void get_encoders(uint16_t* yaw_encoder, uint16_t* pitch_encoder) {
     *pitch_encoder = (encoder_values >> 16) & 0xFFFF;
 }
 
-void home_yaw() {
+unsigned int home(int motor) {
     uint16_t prev_enc = 0;
     uint16_t enc = 0;
     uint16_t enc_no = 0;
-    get_encoders(&enc, &enc_no);
-    set_pwm(20, true, true, 0, false, false, false, false);
-    sleep(1);
-    do {
-        printf("Homing... Current encoder: %d\n", enc);
-        sleep(1);
-        prev_enc = enc;
+    if (motor == MOTOR_YAW) {
         get_encoders(&enc, &enc_no);
-    } while (prev_enc-enc != 0);
-    set_pwm(20, true, true, 0, false, false, true, false);
-    set_pwm(0, false, false, 0, false, false, false, false);
-}
-
-void home_pitch() {
-    uint16_t prev_enc = 0;
-    uint16_t enc = 0;
-    uint16_t enc_no = 0;
-    get_encoders(&enc, &enc_no);
-    set_pwm(0, false, false, 20, true, true, false, false);
+        set_pwm(20, true, true, 0, false, false, false, false);
+    } else {
+        get_encoders(&enc_no, &enc);
+        set_pwm(0, false, false, 20, true, true, false, false);
+    }
     sleep(1);
     do {
         printf("Homing... Current encoder: %d\n", enc);
         sleep(1);
         prev_enc = enc;
-        get_encoders(&enc_no, &enc);
+        if (motor == MOTOR_YAW) {
+            get_encoders(&enc, &enc_no);
+        } else {
+            get_encoders(&enc_no, &enc);
+        }
     } while (prev_enc-enc != 0);
-    set_pwm(0, false, false, 20, true, true, false, true);
+    if (motor == MOTOR_YAW) {
+        set_pwm(20, true, true, 0, false, false, true, false);
+        set_pwm(20, false, true, 0, false, false, false, false);
+    } else {
+        set_pwm(0, false, false, 20, true, true, false, true);
+        set_pwm(0, false, false, 20, false, true, false, false);
+    }
+    sleep(1);
+    do {
+        printf("Homing... Current encoder: %d\n", enc);
+        sleep(1);
+        prev_enc = enc;
+        if (motor == MOTOR_YAW) {
+            get_encoders(&enc, &enc_no);
+        } else {
+            get_encoders(&enc_no, &enc);
+        }
+    } while (prev_enc-enc != 0);
     set_pwm(0, false, false, 0, false, false, false, false);
+    return enc;
 }
 
-int main(int argc, char** argv) {
+
+void* controller(void* arg) {
     int fd = 0;
 
 
 	fd = open("/dev/mem", O_RDWR | O_SYNC);
 	if (fd < 0) {
 		perror("Couldn't open /dev/mem\n");
-		return -1;
+		// return -1;
 	}
 
 	jiwy_map = (uint8_t*)mmap(NULL, HPS_0_ARM_A9_0_JIWY_0_SPAN, PROT_READ | PROT_WRITE, MAP_SHARED, fd, HPS_0_ARM_A9_0_JIWY_0_BASE);
 	if (jiwy_map == MAP_FAILED) {
 		perror("Couldn't map JIWY.");
 		close(fd);
-		return -1;
+		// return -1;
 	}
 
     timer_t timer_id;
@@ -108,9 +123,14 @@ int main(int argc, char** argv) {
     timer_settime(timer_id, 0, &its, NULL);
 
     printf("Start homing...\n");
-    home_yaw();
-    home_pitch();
+    unsigned int yaw_max = home(MOTOR_YAW);
+    unsigned int pitch_max = home(MOTOR_PITCH);
     printf("Homing complete.\n");
+
+    XXDouble yaw_u [2 + 1];
+    XXDouble yaw_y [2 + 1];
+    YYDouble pitch_u [3 + 1];
+    YYDouble pitch_y [1 + 1];
 
 
     /* Initialize the inputs and outputs with correct initial values */
@@ -135,15 +155,16 @@ int main(int argc, char** argv) {
     int raw_pitch_position = 0;
 
     printf("Starting control loop...\n");
-    int counter = 1200;
-    bool count_dir = true;
-    int setpoint = 5000;
     while (1) {
         int sig;
         sigwait(&sigset, &sig);
-        printf("Timer tick\n");
-        get_encoders(&yaw_encoder, &pitch_encoder);
 
+        // Setpoint clamping
+        yaw_setpoint = (yaw_setpoint > yaw_max) ? yaw_max : ((yaw_setpoint < 0) ? 0 : yaw_setpoint);
+        pitch_setpoint = (pitch_setpoint > pitch_max) ? pitch_max : ((pitch_setpoint < 0) ? 0 : pitch_setpoint);
+
+        // printf("Timer tick\n");
+        get_encoders(&yaw_encoder, &pitch_encoder);
         int yaw_diff = yaw_encoder - prev_yaw_encoder;
         prev_yaw_encoder = yaw_encoder;
         if (abs(yaw_diff) > 32768) {
@@ -155,7 +176,7 @@ int main(int argc, char** argv) {
         }
         raw_yaw_position += yaw_diff;
         XXDouble yaw_position = (XXDouble)raw_yaw_position / 21708.8 * 2 * 3.1415926;
-        yaw_u[0] = (double)setpoint / 21708.8 * 2 * 3.1415926;
+        yaw_u[0] = (double)yaw_setpoint / 21708.8 * 2 * 3.1415926;
         yaw_u[1] = yaw_position;
         XXCalculateSubmodel (yaw_u, yaw_y, xx_time);
         uint8_t yaw_duty_cycle = (uint8_t)(abs(yaw_y[1] * 255));
@@ -173,7 +194,7 @@ int main(int argc, char** argv) {
         }
         raw_pitch_position += pitch_diff;
         YYDouble pitch_position = (YYDouble)raw_pitch_position / 21708.8 * 2 * 3.1415926;
-        pitch_u[1] = (double)setpoint / 21708.8 * 2 * 3.1415926;
+        pitch_u[1] = (double)pitch_setpoint / 21708.8 * 2 * 3.1415926;
         pitch_u[2] = pitch_position;
         YYCalculateSubmodel (pitch_u, pitch_y, yy_time);
         uint8_t pitch_duty_cycle = (uint8_t)(abs(pitch_y[0] * 255));
@@ -181,19 +202,6 @@ int main(int argc, char** argv) {
         bool pitch_direction = pitch_y[0] < 0;
 
         set_pwm(yaw_duty_cycle, yaw_direction, true, pitch_duty_cycle, pitch_direction, true, false, false);
-        if (count_dir) {
-            counter++;
-            if (counter >= 2000) {
-                count_dir = false;
-                setpoint = 7000;
-            }
-        } else {
-            counter--;
-            if (counter <= 500) {
-                count_dir = true;
-                setpoint = 3000;
-            }
-        }
     }
 
 
@@ -202,5 +210,61 @@ int main(int argc, char** argv) {
 
 
 	close(fd);
-	return 0;
+}
+
+void exit(int signum) {
+    running = false;
+}
+
+int main(int argc, char** argv) {
+    sigset_t sigusr_set;
+    sigemptyset(&sigusr_set);
+    sigaddset(&sigusr_set, SIGUSR1);
+
+    pthread_sigmask(SIG_BLOCK, &sigusr_set, NULL);
+
+    pthread_t thread;
+    pthread_create(&thread, NULL, controller, NULL);
+
+    signal(SIGINT, exit);
+
+    // sigset_t set;
+    // int sig;
+
+    // // 1. Block SIGINT so sigwait can catch it synchronously
+    // sigemptyset(&set);
+    // sigaddset(&set, SIGINT);
+    // pthread_sigmask(SIG_BLOCK, &set, NULL);
+
+    // sigwait(&set, &sig);
+    // pthread_cancel(thread);
+    // pthread_join(thread, NULL);
+    // set_pwm(0, false, false, 0, false, false, false, false);
+
+    int counter = 0;
+    bool count_dir = true;
+    while (running) {
+        usleep(1000); // Sleep for 100ms
+        if (count_dir) {
+            counter++;
+            if (counter >= 2000) {
+                count_dir = false;
+                yaw_setpoint = 7000;
+                pitch_setpoint = 3000;
+            }
+        } else {
+            counter--;
+            if (counter <= 0) {
+                count_dir = true;
+                yaw_setpoint = 3000;
+                pitch_setpoint = 7000;
+            }
+        }
+    }
+    printf("Exiting...\n");
+    pthread_cancel(thread);
+    pthread_join(thread, NULL);
+    set_pwm(0, false, false, 0, false, false, false, false);
+    printf("Exited.\n");
+    return 0;
 }
