@@ -13,25 +13,51 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
   GstBuffer *buffer = gst_sample_get_buffer(sample);
   GstMapInfo map;
 
-  // GstCaps *caps = gst_sample_get_caps(sample);
-  // GstStructure *s = gst_caps_get_structure(caps, 0);
-  // const char *format = gst_structure_get_string(s, "format");
-  // g_print("Format: %s\n", format);  
+  GstCaps *caps = gst_sample_get_caps(sample);
+  GstStructure *s = gst_caps_get_structure(caps, 0);
+  const char *format = gst_structure_get_string(s, "format");
+  g_print("Format: %s\n", format);  
+
+  int width = 320;
+  int height = 240;
 
   if (gst_buffer_map(buffer, &map, GST_MAP_READ))
   {
-    // Access raw frame data
     g_print("Received buffer of size: %zu\n", map.size);
+    uint8_t *Y = map.data;
+    uint8_t *U = Y + width * height;
+    uint8_t *V = U + (width * height) / 4;
 
-    double sum = 0;
-    for (gsize i = 0; i < map.size; i++)
+    long sum_x = 0;
+    long sum_y = 0;
+    long count = 0;
+
+    for (int y = 0; y < height; y++)
     {
-      sum += map.data[i];
-    }
-    g_print("Average pixel value: %f\n", sum / map.size);
+        for (int x = 0; x < width; x++)
+        {
+            uint8_t Yv = Y[y * width + x];
+            uint8_t Uv = U[(y/2) * (width/2) + (x/2)];
+            uint8_t Vv = V[(y/2) * (width/2) + (x/2)];
 
-    gst_buffer_unmap(buffer, &map);
-  }
+            if (Yv > 220 && abs(Uv - 128) < 15 && Vv > 110) //
+            { 
+                sum_x += x;
+                sum_y += y;
+                count++;
+            }
+        }
+    }
+    if (count > 0)
+    {
+    double cx = (double)sum_x / count;
+    double cy = (double)sum_y / count;
+
+    g_print("Ball centre: (%f, %f)\n", cx, cy);
+    }
+
+      gst_buffer_unmap(buffer, &map);
+    }
   
 
   gst_sample_unref(sample);
@@ -87,7 +113,7 @@ int main(int argc, char *argv[])
   GstElement *q2 = gst_element_factory_make("queue", NULL);
   GstElement *decoder = gst_element_factory_make("jpegdec", "jpeg-decoder");
   GstElement *sink1 = gst_element_factory_make("appsink", NULL);
-  
+
   GstAppSinkCallbacks callbacks = { NULL, NULL, on_new_sample };
   gst_app_sink_set_callbacks(GST_APP_SINK(sink1), &callbacks, NULL, NULL);
 
