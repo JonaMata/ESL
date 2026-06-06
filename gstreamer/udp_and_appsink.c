@@ -59,9 +59,10 @@ int main(int argc, char *argv[])
 
   if (!pipeline || !source || !capsf || !tee)
   {
-    g_printerr("pipeline, source, capsf or tee element could not be created. Exiting.\n");
+    g_printerr("pipeline, source, convert or tee element could not be created. Exiting.\n");
     return -1;
   }
+
   GstCaps *caps = gst_caps_new_simple(
     "image/jpeg",
     "width", G_TYPE_INT, 320,
@@ -85,9 +86,7 @@ int main(int argc, char *argv[])
 
   /* Branch 2: Appsink */
   GstElement *q2 = gst_element_factory_make("queue", NULL);
-  GstElement *decoder = gst_element_factory_make("jpegdec", "jpeg-decoder");
   GstElement *sink1 = gst_element_factory_make("appsink", NULL);
-  
   GstAppSinkCallbacks callbacks = { NULL, NULL, on_new_sample };
   gst_app_sink_set_callbacks(GST_APP_SINK(sink1), &callbacks, NULL, NULL);
 
@@ -98,13 +97,13 @@ int main(int argc, char *argv[])
   gst_bin_add_many(GST_BIN(pipeline),
     source, capsf, tee,
     q1, pay, udp,
-    q2, decoder, sink1,
+    q2, sink1,
     NULL);
 
   /*Link elements*/
   gst_element_link_many(source, capsf, tee, NULL);
   gst_element_link_many(tee, q1, pay, udp, NULL);
-  gst_element_link_many(tee, q2, decoder, sink1, NULL);
+  gst_element_link_many(tee, q2, sink1, NULL);
 
   /* Set the pipeline to "playing" state*/
   g_print("Now playing: %s\n", argv[1]);
