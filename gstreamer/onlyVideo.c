@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
   gst_caps_unref(caps);
 
   g_object_set(udp,
-    "host", "192.168.68.70",
+    "host", "145.126.84.124",
     "port", 5000,
     "sync", FALSE,
     NULL);
