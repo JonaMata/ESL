@@ -37,6 +37,12 @@ bool running = true;
 
 int frame_count = 0;
 
+int HISTORY_SIZE = 5;
+double x_history[HISTORY_SIZE];
+double y_history[HISTORY_SIZE];
+double history_time = HISTORY_SIZE * 0.033; // Assuming 30 FPS
+bool initialized_history = false;
+
 void set_pwm(uint8_t yaw_duty_cycle, bool yaw_direction, bool yaw_enable, uint8_t pitch_duty_cycle, bool pitch_direction, bool pitch_enable, bool yaw_reset, bool pitch_reset) {
     *((uint32_t *)jiwy_map) = yaw_duty_cycle | yaw_enable << 8 | yaw_direction << 9
         | pitch_duty_cycle << 10 | pitch_enable << 18 | pitch_direction << 19
@@ -352,6 +358,28 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
   double y_pos = size > 1000 ? (double)sum_y / size : -1;
   //g_print("Position: (%f, %f)\tSize: %d\n", x_pos, y_pos, size);
 
+  /* Shift the history arrays */
+  if (x_pos >= 0 && y_pos >= 0) {
+    if (!initialized_history) {
+        for (int i = 0; i < HISTORY_SIZE; i++) {
+            x_history[i] = x_pos;
+            y_history[i] = y_pos;
+        }
+        initialized_history = true;
+    } else {
+        for (int i = HISTORY_SIZE - 1; i > 0; i--) {
+            x_history[i] = x_history[i-1];
+            y_history[i] = y_history[i-1];
+        }
+  }
+  x_history[0] = x_pos;
+  y_history[0] = y_pos;
+
+  /* Calculate the speed */
+  double x_speed = (x_history[0] - x_history[HISTORY_SIZE-1])/history_time;
+  double y_speed = (y_history[0] - y_history[HISTORY_SIZE-1])/history_time;
+  g_print("Speed: (%f, %f)\n", x_speed, y_speed);
+
   frame_count++;
   if (frame_count == 1) {
     frame_count = 0;
@@ -361,6 +389,16 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
             yaw_setpoint += yaw_diff*2;
         }
         int pitch_diff = (int)(y_pos - height/2);
+        if (abs(pitch_diff) > DEADZONE) {
+            pitch_setpoint += pitch_diff*2;
+        }
+    }
+    if((x_pos < 0 || y_pos < 0) && initialized_history) {
+        int yaw_diff = (int)((x_history[0]+x_speed*0.033) - width/2);
+        if (abs(yaw_diff) > DEADZONE) {
+            yaw_setpoint += yaw_diff*2;
+        }
+        int pitch_diff = (int)((y_history[0]+y_speed*0.033) - height/2);
         if (abs(pitch_diff) > DEADZONE) {
             pitch_setpoint += pitch_diff*2;
         }
