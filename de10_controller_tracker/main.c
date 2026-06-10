@@ -24,6 +24,8 @@
 #define MOTOR_YAW 0
 #define MOTOR_PITCH 1
 
+#define DEADZONE 10
+
 GMainLoop *loop;
 
 uint8_t* jiwy_map = NULL;
@@ -270,7 +272,7 @@ bus_call(GstBus *bus,
 
 static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
 {
-  g_print("New sample received\n");
+  //g_print("New sample received\n");
   GstSample *sample = gst_app_sink_pull_sample(appsink);
   if (!sample)
     return GST_FLOW_ERROR;
@@ -283,7 +285,7 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
 
   const char *format = gst_structure_get_string(s, "format");
 
-  g_print("Format: %s\n", format);
+  //g_print("Format: %s\n", format);
 
   GstVideoInfo info;
   if (!gst_video_info_from_caps(&info, caps)) {
@@ -292,14 +294,14 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
       return GST_FLOW_ERROR;
   }
 
-  g_print("Width:  %d\n", GST_VIDEO_INFO_WIDTH(&info));
-  g_print("Height: %d\n", GST_VIDEO_INFO_HEIGHT(&info));
-  g_print("Format: %s\n",
-         gst_video_format_to_string(GST_VIDEO_INFO_FORMAT(&info)));
+  //g_print("Width:  %d\n", GST_VIDEO_INFO_WIDTH(&info));
+  //g_print("Height: %d\n", GST_VIDEO_INFO_HEIGHT(&info));
+  //g_print("Format: %s\n",
+  //       gst_video_format_to_string(GST_VIDEO_INFO_FORMAT(&info)));
 
   int stride1 = GST_VIDEO_INFO_PLANE_STRIDE(&info, 0);
 
-  g_print("Stride: %d\n", stride1);
+  //g_print("Stride: %d\n", stride1);
 
   GstVideoFrame frame;
 
@@ -341,25 +343,25 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
         sum_y += y;
       }
       if (x == 160 && y == 120) {
-        g_print("Center: r: %d, g: %d, b: %d\n", r, g, b);
+        //g_print("Center: r: %d, g: %d, b: %d\n", r, g, b);
       }
     }
   }
 
   double x_pos = size > 1000 ? (double)sum_x / size : -1;
   double y_pos = size > 1000 ? (double)sum_y / size : -1;
-  g_print("Position: (%f, %f)\tSize: %d\n", x_pos, y_pos, size);
+  //g_print("Position: (%f, %f)\tSize: %d\n", x_pos, y_pos, size);
 
   frame_count++;
   if (frame_count == 1) {
     frame_count = 0;
     if (size > 1000) {
         int yaw_diff = (int)(x_pos - width/2);
-        if (abs(yaw_diff) > 50) {
+        if (abs(yaw_diff) > DEADZONE) {
             yaw_setpoint += yaw_diff*2;
         }
         int pitch_diff = (int)(y_pos - height/2);
-        if (abs(pitch_diff) > 50) {
+        if (abs(pitch_diff) > DEADZONE) {
             pitch_setpoint += pitch_diff*2;
         }
     }

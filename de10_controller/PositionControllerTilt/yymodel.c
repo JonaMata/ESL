@@ -115,7 +115,7 @@ void YYModelInitialize_parameters(void)
 	yy_P[1] = 1.6;		/* PID1\kp */
 	yy_P[2] = 0.3;//0.05;		/* PID1\tauD */
 	yy_P[3] = 0.001;		/* PID1\beta */
-	yy_P[4] = 10.5;		/* PID1\tauI */
+	yy_P[4] = 40.0;//10.5;		/* PID1\tauI */
 	yy_P[5] = -0.99;		/* SignalLimiter2\minimum */
 	yy_P[6] = 0.99;		/* SignalLimiter2\maximum */
 
@@ -215,7 +215,7 @@ void YYCalculateDynamic (void)
 	yy_R[2] = yy_s[2] + (yy_step_size * yy_R[0]) / yy_P[4];
 
 	/* PID1\output = PID1\uI + PID1\uD; */
-	yy_V[2] = yy_R[0];//yy_R[2] + yy_R[0];
+	yy_V[2] = yy_R[2] + yy_R[0];
 
 	/* PlusMinus1\output = corrGain\output + PID1\output; */
 	yy_V[4] = yy_V[1] + yy_V[2];
