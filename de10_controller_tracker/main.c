@@ -373,6 +373,7 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
             x_history[i] = x_history[i-1];
             y_history[i] = y_history[i-1];
         }
+    }
   }
   x_history[0] = x_pos;
   y_history[0] = y_pos;
