@@ -374,9 +374,10 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
             y_history[i] = y_history[i-1];
         }
     }
+    
+    x_history[0] = x_pos;
+    y_history[0] = y_pos;
   }
-  x_history[0] = x_pos;
-  y_history[0] = y_pos;
 
   /* Calculate the speed */
   double x_speed = (x_history[0] - x_history[HISTORY_SIZE-1])/history_time;
@@ -397,11 +398,11 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
         }
     }
     if((x_pos < 0 || y_pos < 0) && initialized_history) {
-        int yaw_diff = (int)((x_history[0]+x_speed*0.033) - width/2);
+        int yaw_diff = (int)((x_speed*0.033) - width/2);
         if (abs(yaw_diff) > DEADZONE) {
             yaw_setpoint += yaw_diff*2;
         }
-        int pitch_diff = (int)((y_history[0]+y_speed*0.033) - height/2);
+        int pitch_diff = (int)((y_speed*0.033) - height/2);
         if (abs(pitch_diff) > DEADZONE) {
             pitch_setpoint += pitch_diff*2;
         }
