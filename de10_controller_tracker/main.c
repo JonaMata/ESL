@@ -26,6 +26,9 @@
 
 #define DEADZONE 10
 
+
+#define HISTORY_SIZE 5
+
 GMainLoop *loop;
 
 uint8_t* jiwy_map = NULL;
@@ -37,7 +40,6 @@ bool running = true;
 
 int frame_count = 0;
 
-int HISTORY_SIZE = 5;
 double x_history[HISTORY_SIZE];
 double y_history[HISTORY_SIZE];
 double history_time = HISTORY_SIZE * 0.033; // Assuming 30 FPS
