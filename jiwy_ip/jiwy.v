@@ -49,8 +49,8 @@ module jiwy #(
     assign pitch_enable = in_pitch_mem[PWM_WIDTH];
     assign pitch_direction = in_pitch_mem[PWM_WIDTH+1];
 
-    wire [15:0] yaw_enc_count;
-    wire [15:0] pitch_enc_count;
+    wire [13:0] yaw_enc_count;
+    wire [13:0] pitch_enc_count;
 
     pwm #(
         .DATA_WIDTH(PWM_WIDTH),
@@ -82,7 +82,7 @@ module jiwy #(
 
 
     encoder #(
-        .DATA_WIDTH(DATA_WIDTH/2)
+        .DATA_WIDTH(14)
     ) yaw_encoder (
         .clk(clk),
         .rst(reset),
@@ -94,7 +94,7 @@ module jiwy #(
 
 
     encoder #(
-        .DATA_WIDTH(DATA_WIDTH/2)
+        .DATA_WIDTH(14)
     ) pitch_encoder (
         .clk(clk),
         .rst(reset),
@@ -109,7 +109,7 @@ module jiwy #(
             slave_readdata <= 0;
         end else begin
             if (slave_read) begin
-                slave_readdata <= {pitch_enc_count, yaw_enc_count};
+                slave_readdata <= {0, 0, pitch_enc_count, 0, 0, yaw_enc_count};
             end
             if (slave_write) begin
                 in_mem <= slave_writedata;
