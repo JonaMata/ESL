@@ -356,7 +356,7 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
     bool visited[height * width];
 
     g_print("Initializing bool array\n");
-    for (int i; i < width*height; i++) {
+    for (int i = 0; i < width*height; i++) {
         visited[i] = false;
     }
 
