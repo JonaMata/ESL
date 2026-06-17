@@ -375,15 +375,15 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
 
         if (g > r + 20 && g > b + 20 && g > 60)
         {
-            size += 1;
-            sum_x += x;
-            sum_y += y;
+            (*size) += 1;
+            (*sum_x) += x;
+            (*sum_y) += y;
         }
 
-        check_neighbours(x-1, y, &size, &sum_x, &sum_y, &visited);
-        check_neighbours(x+1, y, &size, &sum_x, &sum_y, &visited);
-        check_neighbours(x, y-1, &size, &sum_x, &sum_y, &visited);
-        check_neighbours(x, y+1, &size, &sum_x, &sum_y, &visited);
+        check_neighbours(x-1, y, size, sum_x, sum_y, visited);
+        check_neighbours(x+1, y, size, sum_x, sum_y, visited);
+        check_neighbours(x, y-1, size, sum_x, sum_y, visited);
+        check_neighbours(x, y+1, size, sum_x, sum_y, visited);
     }
 
     for (int y = 0; y < height; y++)
