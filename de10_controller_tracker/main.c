@@ -355,9 +355,12 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
 
     bool visited[height * width];
 
+    g_print("Initializing bool array\n");
     for (int i; i < width*height; i++) {
         visited[i] = false;
     }
+
+    g_print("Initialized bool array\n");
 
     void check_neighbours(int x, int y, int *size, int *sum_x, int *sum_y, bool *visited)
     {
@@ -398,7 +401,13 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
             int sum_x = 0;
             int sum_y = 0;
 
+
+            g_print("Starting neighbour checking\n");
+
             check_neighbours(x, y, &size, &sum_x, &sum_y, &visited);
+
+
+            g_print("Finished neighbour tracking\n");
 
             if (size > best_size) {
                 best_size = size;
