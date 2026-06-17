@@ -23,7 +23,7 @@
 #define MOTOR_YAW 0
 #define MOTOR_PITCH 1
 
-#define DEADZONE 10
+#define DEADZONE 20
 #define MIN_BALL_SIZE 500
 
 GMainLoop *loop;
@@ -189,14 +189,14 @@ void *controller(void *arg)
         // Setpoint clamping
         // yaw_setpoint = (yaw_setpoint > yaw_max) ? yaw_max : ((yaw_setpoint < 0) ? 0 : yaw_setpoint);
         // pitch_setpoint = (pitch_setpoint > pitch_max) ? pitch_max : ((pitch_setpoint < 0) ? 0 : pitch_setpoint);
-        if (yaw_setpoint > yaw_max)
-            yaw_setpoint = yaw_max;
-        if (yaw_setpoint < 0)
-            yaw_setpoint = 0;
-        if (pitch_setpoint > pitch_max)
-            pitch_setpoint = pitch_max;
-        if (pitch_setpoint < 0)
-            pitch_setpoint = 0;
+        if (yaw_setpoint > yaw_max-100)
+            yaw_setpoint = yaw_max-100;
+        if (yaw_setpoint < 100)
+            yaw_setpoint = 100;
+        if (pitch_setpoint > pitch_max-100)
+            pitch_setpoint = pitch_max-100;
+        if (pitch_setpoint < 100)
+            pitch_setpoint = 100;
 
         // printf("Timer tick\n");
         get_encoders(&yaw_encoder, &pitch_encoder);
@@ -426,12 +426,20 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
             int yaw_diff = (int)(x_pos - width / 2);
             if (abs(yaw_diff) > DEADZONE)
             {
-                yaw_setpoint += yaw_diff * 2;
+		int diff_square = yaw_diff*yaw_diff;
+		if (yaw_diff<0) {
+			diff_square *= -1;
+		}
+                yaw_setpoint += diff_square * 0.03;
             }
             int pitch_diff = (int)(y_pos - height / 2);
             if (abs(pitch_diff) > DEADZONE)
             {
-                pitch_setpoint += pitch_diff * 2;
+		int diff_square = pitch_diff*pitch_diff;
+		if (pitch_diff < 0) {
+			diff_square *= -1;
+		}
+                pitch_setpoint += diff_square * 0.03;
             }
         }
     }
