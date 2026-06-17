@@ -24,6 +24,7 @@
 #define MOTOR_PITCH 1
 
 #define DEADZONE 10
+#define MIN_BALL_SIZE 500
 
 GMainLoop *loop;
 
@@ -378,98 +379,57 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
     int best_sum_x = 0;
     int best_sum_y = 0;
 
-    bool *visited = (bool *)malloc(height * width * sizeof(bool));
-    memset(visited, 0, height * width * sizeof(bool));
+    bool visited[height * width];
 
-    int *queue_x = (int *)malloc(height * width * sizeof(int));
-    int *queue_y = (int *)malloc(height * width * sizeof(int));
+    g_print("Initializing bool array\n");
+    for (int i = 0; i < width*height; i++) {
+        visited[i] = false;
+    }
+
+    g_print("Initialized bool array\n");
+
 
     for (int y = 0; y < height; y++)
     {
+
         for (int x = 0; x < width; x++)
         {
+
             if (visited[y * width + x])
+            {
                 continue;
+            }
 
-            uint8_t *row = data + y * stride;
-            uint8_t *pixel = row + x * 3;
-            uint8_t r = pixel[0];
-            uint8_t g = pixel[1];
-            uint8_t b = pixel[2];
-
-            // Only start BFS if pixel is green
-            if (!(g > r + 20 && g > b + 20 && g > 60))
-                continue;
-
-            // BFS to find connected blob
             int size = 0;
             int sum_x = 0;
             int sum_y = 0;
-            int queue_head = 0, queue_tail = 0;
 
-            queue_x[queue_tail] = x;
-            queue_y[queue_tail] = y;
-            queue_tail++;
-            visited[y * width + x] = true;
 
-            while (queue_head < queue_tail)
-            {
-                int cx = queue_x[queue_head];
-                int cy = queue_y[queue_head];
-                queue_head++;
+            g_print("Starting neighbour checking\n");
 
-                row = data + cy * stride;
-                pixel = row + cx * 3;
-                r = pixel[0];
-                g = pixel[1];
-                b = pixel[2];
+            check_neighbours(x, y, &size, &sum_x, &sum_y, visited, width, height, stride, data);
 
-                if (g > r + 20 && g > b + 20 && g > 60)
-                {
-                    size++;
-                    sum_x += cx;
-                    sum_y += cy;
 
-                    // Check 4 neighbors
-                    int dx[] = {-1, 1, 0, 0};
-                    int dy[] = {0, 0, -1, 1};
-                    for (int i = 0; i < 4; i++)
-                    {
-                        int nx = cx + dx[i];
-                        int ny = cy + dy[i];
-                        if (nx >= 0 && nx < width && ny >= 0 && ny < height && !visited[ny * width + nx])
-                        {
-                            visited[ny * width + nx] = true;
-                            queue_x[queue_tail] = nx;
-                            queue_y[queue_tail] = ny;
-                            queue_tail++;
-                        }
-                    }
-                }
-            }
+            g_print("Finished neighbour tracking\n");
 
-            if (size > best_size)
-            {
+            if (size > best_size) {
                 best_size = size;
                 best_sum_x = sum_x;
                 best_sum_y = sum_y;
             }
+
         }
     }
 
-    free(visited);
-    free(queue_x);
-    free(queue_y);
-
-    double x_pos = best_size > 1000 ? (double)best_sum_x / best_size : -1;
-    double y_pos = best_size > 1000 ? (double)best_sum_y / best_size : -1;
+    double x_pos = best_size > MIN_BALL_SIZE ? (double)best_sum_x / best_size : -1;
+    double y_pos = best_size > MIN_BALL_SIZE ? (double)best_sum_y / best_size : -1;
     // g_print("Position: (%f, %f)\tSize: %d\n", x_pos, y_pos, size);
 
     frame_count++;
     if (frame_count == 1)
     {
         frame_count = 0;
-        if (best_size > 1000)
+        if (best_size > MIN_BALL_SIZE)
         {
             int yaw_diff = (int)(x_pos - width / 2);
             if (abs(yaw_diff) > DEADZONE)
