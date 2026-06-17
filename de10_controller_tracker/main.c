@@ -401,12 +401,8 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
             int sum_y = 0;
 
 
-            g_print("Starting neighbour checking\n");
 
             check_neighbours(x, y, &size, &sum_x, &sum_y, visited, width, height, stride, data);
-
-
-            g_print("Finished neighbour tracking\n");
 
             if (size > best_size) {
                 best_size = size;
@@ -419,7 +415,7 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
 
     double x_pos = best_size > MIN_BALL_SIZE ? (double)best_sum_x / best_size : -1;
     double y_pos = best_size > MIN_BALL_SIZE ? (double)best_sum_y / best_size : -1;
-    // g_print("Position: (%f, %f)\tSize: %d\n", x_pos, y_pos, size);
+    g_print("Position: (%f, %f)\tSize: %d\n", x_pos, y_pos, size);
 
     frame_count++;
     if (frame_count == 1)
