@@ -296,6 +296,31 @@ bus_call(GstBus *bus,
     return TRUE;
 }
 
+
+void check_neighbours(int x, int y, int *size, int *sum_x, int *sum_y, bool *visited, int width, int height, int stride, uint8_t *data)
+{
+    if (x < 0 || x >= width || y < 0 || y >= height) return;
+    visited[y*width+x] = true;
+    uint8_t *row = data + y * stride;
+    uint8_t *pixel = row + x * 3;
+
+    uint8_t r = pixel[0];
+    uint8_t g = pixel[1];
+    uint8_t b = pixel[2];
+
+    if (g > r + 20 && g > b + 20 && g > 60)
+    {
+        (*size) += 1;
+        (*sum_x) += x;
+        (*sum_y) += y;
+
+        check_neighbours(x-1, y, size, sum_x, sum_y, visited, width, height, stride, data);
+        check_neighbours(x+1, y, size, sum_x, sum_y, visited, width, height, stride, data);
+        check_neighbours(x, y-1, size, sum_x, sum_y, visited, width, height, stride, data);
+        check_neighbours(x, y+1, size, sum_x, sum_y, visited, width, height, stride, data);
+    }
+}
+
 static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
 {
     // g_print("New sample received\n");
@@ -353,70 +378,88 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
     int best_sum_x = 0;
     int best_sum_y = 0;
 
-    bool visited[height * width];
+    bool *visited = (bool *)malloc(height * width * sizeof(bool));
+    memset(visited, 0, height * width * sizeof(bool));
 
-    g_print("Initializing bool array\n");
-    for (int i = 0; i < width*height; i++) {
-        visited[i] = false;
-    }
-
-    g_print("Initialized bool array\n");
-
-    void check_neighbours(int x, int y, int *size, int *sum_x, int *sum_y, bool *visited)
-    {
-        if (x < 0 || x >= width || y < 0 || y >= height) return;
-        visited[y*width+x] = true;
-        uint8_t *row = data + y * stride;
-        uint8_t *pixel = row + x * 3;
-
-        uint8_t r = pixel[0];
-        uint8_t g = pixel[1];
-        uint8_t b = pixel[2];
-
-        if (g > r + 20 && g > b + 20 && g > 60)
-        {
-            (*size) += 1;
-            (*sum_x) += x;
-            (*sum_y) += y;
-        }
-
-        check_neighbours(x-1, y, size, sum_x, sum_y, visited);
-        check_neighbours(x+1, y, size, sum_x, sum_y, visited);
-        check_neighbours(x, y-1, size, sum_x, sum_y, visited);
-        check_neighbours(x, y+1, size, sum_x, sum_y, visited);
-    }
+    int *queue_x = (int *)malloc(height * width * sizeof(int));
+    int *queue_y = (int *)malloc(height * width * sizeof(int));
 
     for (int y = 0; y < height; y++)
     {
-
         for (int x = 0; x < width; x++)
         {
-
             if (visited[y * width + x])
-            {
                 continue;
-            }
 
+            uint8_t *row = data + y * stride;
+            uint8_t *pixel = row + x * 3;
+            uint8_t r = pixel[0];
+            uint8_t g = pixel[1];
+            uint8_t b = pixel[2];
+
+            // Only start BFS if pixel is green
+            if (!(g > r + 20 && g > b + 20 && g > 60))
+                continue;
+
+            // BFS to find connected blob
             int size = 0;
             int sum_x = 0;
             int sum_y = 0;
+            int queue_head = 0, queue_tail = 0;
 
+            queue_x[queue_tail] = x;
+            queue_y[queue_tail] = y;
+            queue_tail++;
+            visited[y * width + x] = true;
 
-            g_print("Starting neighbour checking\n");
+            while (queue_head < queue_tail)
+            {
+                int cx = queue_x[queue_head];
+                int cy = queue_y[queue_head];
+                queue_head++;
 
-            check_neighbours(x, y, &size, &sum_x, &sum_y, &visited);
+                row = data + cy * stride;
+                pixel = row + cx * 3;
+                r = pixel[0];
+                g = pixel[1];
+                b = pixel[2];
 
+                if (g > r + 20 && g > b + 20 && g > 60)
+                {
+                    size++;
+                    sum_x += cx;
+                    sum_y += cy;
 
-            g_print("Finished neighbour tracking\n");
+                    // Check 4 neighbors
+                    int dx[] = {-1, 1, 0, 0};
+                    int dy[] = {0, 0, -1, 1};
+                    for (int i = 0; i < 4; i++)
+                    {
+                        int nx = cx + dx[i];
+                        int ny = cy + dy[i];
+                        if (nx >= 0 && nx < width && ny >= 0 && ny < height && !visited[ny * width + nx])
+                        {
+                            visited[ny * width + nx] = true;
+                            queue_x[queue_tail] = nx;
+                            queue_y[queue_tail] = ny;
+                            queue_tail++;
+                        }
+                    }
+                }
+            }
 
-            if (size > best_size) {
+            if (size > best_size)
+            {
                 best_size = size;
                 best_sum_x = sum_x;
                 best_sum_y = sum_y;
             }
-
         }
     }
+
+    free(visited);
+    free(queue_x);
+    free(queue_y);
 
     double x_pos = best_size > 1000 ? (double)best_sum_x / best_size : -1;
     double y_pos = best_size > 1000 ? (double)best_sum_y / best_size : -1;
