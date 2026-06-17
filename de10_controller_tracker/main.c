@@ -398,7 +398,7 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
             int sum_x = 0;
             int sum_y = 0;
 
-            check_neighbours(x, y, &size, &sum_x, &sum_y, &visited)
+            check_neighbours(x, y, &size, &sum_x, &sum_y, &visited);
 
             if (size > best_size) {
                 best_size = size;
