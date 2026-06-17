@@ -379,15 +379,8 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
     int best_sum_x = 0;
     int best_sum_y = 0;
 
-    bool visited[height * width];
-
-    g_print("Initializing bool array\n");
-    for (int i = 0; i < width*height; i++) {
-        visited[i] = false;
-    }
-
-    g_print("Initialized bool array\n");
-
+    bool *visited = (bool *)malloc(height * width * sizeof(bool));
+    memset(visited, 0, height * width * sizeof(bool));
 
     for (int y = 0; y < height; y++)
     {
