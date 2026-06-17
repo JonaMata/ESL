@@ -301,7 +301,9 @@ bus_call(GstBus *bus,
 void check_neighbours(int x, int y, int *size, int *sum_x, int *sum_y, bool *visited, int width, int height, int stride, uint8_t *data)
 {
     if (x < 0 || x >= width || y < 0 || y >= height) return;
-    visited[y*width+x] = true;
+    
+    if (visited[y*width+x]) return;
+    
     uint8_t *row = data + y * stride;
     uint8_t *pixel = row + x * 3;
 
@@ -309,17 +311,18 @@ void check_neighbours(int x, int y, int *size, int *sum_x, int *sum_y, bool *vis
     uint8_t g = pixel[1];
     uint8_t b = pixel[2];
 
-    if (g > r + 20 && g > b + 20 && g > 60)
-    {
-        (*size) += 1;
-        (*sum_x) += x;
-        (*sum_y) += y;
+    if (!(g > r + 20 && g > b + 20 && g > 60)) return;
+    
+    visited[y*width+x] = true;
+    
+    (*size) += 1;
+    (*sum_x) += x;
+    (*sum_y) += y;
 
-        check_neighbours(x-1, y, size, sum_x, sum_y, visited, width, height, stride, data);
-        check_neighbours(x+1, y, size, sum_x, sum_y, visited, width, height, stride, data);
-        check_neighbours(x, y-1, size, sum_x, sum_y, visited, width, height, stride, data);
-        check_neighbours(x, y+1, size, sum_x, sum_y, visited, width, height, stride, data);
-    }
+    check_neighbours(x-1, y, size, sum_x, sum_y, visited, width, height, stride, data);
+    check_neighbours(x+1, y, size, sum_x, sum_y, visited, width, height, stride, data);
+    check_neighbours(x, y-1, size, sum_x, sum_y, visited, width, height, stride, data);
+    check_neighbours(x, y+1, size, sum_x, sum_y, visited, width, height, stride, data);
 }
 
 static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
