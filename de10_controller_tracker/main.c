@@ -413,6 +413,8 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
         }
     }
 
+    free(visited);
+
     double x_pos = best_size > MIN_BALL_SIZE ? (double)best_sum_x / best_size : -1;
     double y_pos = best_size > MIN_BALL_SIZE ? (double)best_sum_y / best_size : -1;
     g_print("Position: (%f, %f)\tSize: %d\n", x_pos, y_pos, best_size);
