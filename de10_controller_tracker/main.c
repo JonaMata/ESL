@@ -37,6 +37,8 @@ bool running = true;
 
 int frame_count = 0;
 
+struct timespec start,end;
+
 void set_pwm(uint8_t yaw_duty_cycle, bool yaw_direction, bool yaw_enable, uint8_t pitch_duty_cycle, bool pitch_direction, bool pitch_enable, bool yaw_reset, bool pitch_reset)
 {
     *((uint32_t *)jiwy_map) = yaw_duty_cycle | yaw_enable << 8 | yaw_direction << 9 | pitch_duty_cycle << 10 | pitch_enable << 18 | pitch_direction << 19 | yaw_reset << 20 | pitch_reset << 21;
@@ -185,6 +187,7 @@ void *controller(void *arg)
     {
         int sig;
         sigwait(&sigset, &sig);
+        clock_gettime(CLOCK_MONOTONIC_RAW, &start);
 
         // Setpoint clamping
         // yaw_setpoint = (yaw_setpoint > yaw_max) ? yaw_max : ((yaw_setpoint < 0) ? 0 : yaw_setpoint);
@@ -247,6 +250,9 @@ void *controller(void *arg)
         bool pitch_direction = pitch_y[0] < 0;
 
         set_pwm(yaw_duty_cycle, yaw_direction, true, pitch_duty_cycle, pitch_direction, true, false, false);
+        clock_gettime(CLOCK_MONOTONIC_RAW, &end);
+        //print start and end time
+        printf("%ld.%09ld\t%ld.%09ld\n", start.tv_sec, start.tv_nsec, end.tv_sec, end.tv_nsec);
     }
 
     XXTerminateSubmodel(yaw_u, yaw_y, xx_time);
