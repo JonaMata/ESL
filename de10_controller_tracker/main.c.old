@@ -439,7 +439,7 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
 		if (yaw_diff<0) {
 			diff_square *= -1;
 		}
-                yaw_increase = yaw_diff*2/30;//diff_square * 0.03 / 30;
+                yaw_increase = diff_square * 0.03 / 30;
                 //yaw_setpoint += diff_square * 0.03;
             }
             int pitch_diff = (int)(y_pos - height / 2);
@@ -449,7 +449,7 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
 		if (pitch_diff < 0) {
 			diff_square *= -1;
 		}
-                pitch_increase = pitch_diff*2/30;//diff_square * 0.03 / 30;
+                pitch_increase = diff_square * 0.03 / 30;
                 //pitch_setpoint += diff_square * 0.03;
             }
         }
