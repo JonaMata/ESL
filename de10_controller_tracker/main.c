@@ -69,7 +69,7 @@ int home(int motor)
     sleep(1);
     do
     {
-        printf("Homing... Current encoder: %d\n", enc);
+        // printf("Homing... Current encoder: %d\n", enc);
         sleep(1);
         prev_enc = enc;
         if (motor == MOTOR_YAW)
@@ -94,7 +94,7 @@ int home(int motor)
     sleep(1);
     do
     {
-        printf("Homing... Current encoder: %d\n", enc);
+        // printf("Homing... Current encoder: %d\n", enc);
         sleep(1);
         prev_enc = enc;
         if (motor == MOTOR_YAW)
@@ -151,10 +151,10 @@ void *controller(void *arg)
 
     timer_settime(timer_id, 0, &its, NULL);
 
-    printf("Start homing...\n");
+    // printf("Start homing...\n");
     int yaw_max = home(MOTOR_YAW);
     int pitch_max = home(MOTOR_PITCH);
-    printf("Homing complete.\n");
+    // printf("Homing complete.\n");
 
     XXDouble yaw_u[2 + 1];
     XXDouble yaw_y[2 + 1];
@@ -182,7 +182,7 @@ void *controller(void *arg)
     int raw_yaw_position = 0;
     int raw_pitch_position = 0;
 
-    printf("Starting control loop...\n");
+    // printf("Starting control loop...\n");
     while (1)
     {
         int sig;
@@ -421,7 +421,7 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer user_data)
 
     double x_pos = best_size > MIN_BALL_SIZE ? (double)best_sum_x / best_size : -1;
     double y_pos = best_size > MIN_BALL_SIZE ? (double)best_sum_y / best_size : -1;
-    g_print("Position: (%f, %f)\tSize: %d\n", x_pos, y_pos, best_size);
+    // g_print("Position: (%f, %f)\tSize: %d\n", x_pos, y_pos, best_size);
 
     frame_count++;
     if (frame_count == 1)
