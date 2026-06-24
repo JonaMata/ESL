@@ -202,6 +202,7 @@ void* controller(void* arg) {
         bool pitch_direction = pitch_y[0] < 0;
 
         set_pwm(yaw_duty_cycle, yaw_direction, true, pitch_duty_cycle, pitch_direction, true, false, false);
+        gprintf("%f\t%f\t%f\t%f\n", yaw_position, yaw_u[0], pitch_position, pitch_u[1]);
     }
 
 
